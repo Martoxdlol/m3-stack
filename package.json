@@ -1,0 +1,41 @@
+{
+  "name": "m3-stack-source",
+  "publish-name": "m3-stack",
+  "version": "0.0.1",
+  "description": "",
+  "license": "MIT",
+  "author": "Tomás Cichero <martoxdlol@gmail.com>",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./react": "./src/react/index.ts"
+  },
+  "tsup": {
+    "entry": {
+      "react": "src/react/index.ts"
+    },
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true,
+    "dts": true,
+    "format": [
+      "cjs",
+      "esm"
+    ]
+  },
+  "workspaces": [
+    "example",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && cp README.md dist/README.md && node build-package-json.js"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "react": "^19.0.0"
+  }
+}
