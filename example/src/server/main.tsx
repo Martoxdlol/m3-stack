@@ -1,16 +1,16 @@
-console.log('Server')
+import { Hono } from "hono";
+import { serve } from '@hono/node-server'
 
+const app = new Hono()
+    .use(async (_c, next) => {
+        console.log("Request received")
+        return next()
+    })
+    .get("/api", async (c) => {
+        return c.text("Hello, World!")
+    })
 
-console.log(new URL(import.meta.url).pathname)
-
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-for (let i = 0; i < 6; i++) {
-    console.log(`Server ${i}`)
-    await wait(1000)
-}
-
-1 + 1
-
-throw new Error('Server Error')
+serve({
+    fetch: app.fetch,
+    port: 3999
+})

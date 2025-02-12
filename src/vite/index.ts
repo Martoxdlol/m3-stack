@@ -19,6 +19,12 @@ export const defaultViteConfig = {
     }),
     tailwindcss(),
   ],
+  server: {
+    host: "0.0.0.0",
+    proxy: {
+      "/api": "http://localhost:3999",
+    },
+  },
   build: {
     outDir: "dist/public",
   },

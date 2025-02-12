@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "m3-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,6 +12,7 @@
     "m3-stack": "m3-stack"
   },
   "dependencies": {
+    "hono": "^4.7.0",
     "m3-stack": "*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
