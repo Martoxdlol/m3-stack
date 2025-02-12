@@ -1,46 +1,51 @@
 #!/usr/bin/env node
+
 import { spawn } from "node:child_process";
 
-function runCmd(cmd: string): void {
-  spawn(cmd, { stdio: "inherit", shell: true });
+function runCmd(cmd: string): Promise<number> {
+  return new Promise((resolve) => {
+    spawn(cmd, { stdio: "inherit", shell: true }).addListener("exit", (code) =>
+      resolve(code ?? -1)
+    );
+  });
 }
 
-const command = process.argv[2];
-const subArgs = process.argv.slice(3);
+async function main() {
+  const command = process.argv[2];
+  const subArgs = process.argv.slice(3);
 
-if (!command) {
-  console.error("No command provided");
-  process.exit(1);
-}
-
-const BUILD_APP_SCRIPT = "tsc -b && vite build";
-const BUILD_SERVER_SCRIPT =
-  "tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json";
-
-const scripts: Record<string, string | string[]> = {
-  dev: "vite",
-  build: [BUILD_APP_SCRIPT, BUILD_SERVER_SCRIPT],
-  "build:app": BUILD_APP_SCRIPT,
-  "build:server": BUILD_SERVER_SCRIPT,
-  preview: "vite preview",
-};
-
-if (!(command in scripts)) {
-  console.error(`Command ${command} not found`);
-  process.exit(1);
-}
-
-if (Array.isArray(scripts[command]!)) {
-  const cmd = scripts[command] as string[] | string;
-  const commands: string[] = [];
-  if (Array.isArray(cmd)) {
-    commands.push(...cmd);
-  } else {
-    commands.push(cmd);
+  if (!command) {
+    console.error("No command provided");
+    process.exit(1);
   }
 
-  for (const c of commands) {
-    console.log(`m3-stack: Running command [${command}]: ${c}`);
-    runCmd(`${c} ${subArgs.join(" ")}`.trim());
+  const BUILD_APP_SCRIPT = "tsc -b && vite build";
+  const BUILD_SERVER_SCRIPT =
+    "tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json";
+
+  const DEV_APP_SCRIPT = "vite";
+  const DEV_SERVER_SCRIPT = `${BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps dist/server/main.js'`;
+
+  const scripts: Record<string, string[][]> = {
+    dev: [[DEV_APP_SCRIPT, DEV_SERVER_SCRIPT]],
+    "dev:app": [[DEV_APP_SCRIPT]],
+    "dev:server": [[DEV_SERVER_SCRIPT]],
+    build: [[BUILD_APP_SCRIPT, BUILD_SERVER_SCRIPT], ["echo build ready!"]],
+    "build:app": [[BUILD_APP_SCRIPT]],
+    "build:server": [[BUILD_SERVER_SCRIPT]],
+    preview: [["vite preview", DEV_SERVER_SCRIPT]],
+  };
+
+  const cmds = scripts[command];
+
+  if (!cmds) {
+    console.error(`Command ${command} not found`);
+    process.exit(1);
+  }
+
+  for (const c of cmds) {
+    await Promise.all(c.map((c) => runCmd(`${c} ${subArgs.join(" ")}`.trim())));
   }
 }
+
+main();

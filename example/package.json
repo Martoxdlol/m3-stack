@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "t": "m3-stack build",
-    "dev": "vite",
-    "build": "run-p build:*",
-    "build:app": "tsc -b && vite build",
-    "build:server": "tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json",
-    "preview": "vite preview"
+    "dev": "m3-stack dev",
+    "build": "m3-stack build",
+    "build:app": "m3-stack build:app",
+    "build:server": "m3-stack build:server",
+    "preview": "m3-stack preview",
+    "m3-stack": "m3-stack"
   },
   "dependencies": {
     "m3-stack": "*",
@@ -20,8 +20,6 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "globals": "^15.14.0",
-    "npm-run-all": "^4.1.5",
-    "tsup": "^8.3.6",
     "typescript": "~5.7.2",
     "vite": "^6.1.0"
   }
