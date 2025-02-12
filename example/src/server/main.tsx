@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { serve } from '@hono/node-server'
 import { createDatabase, type DBType } from './db'
 import { type AuthType, createAuth } from "./auth";
+import 'dotenv/config'
 
 declare module 'hono' {
     interface ContextVariableMap {

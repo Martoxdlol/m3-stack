@@ -27,11 +27,12 @@ const BUILD_APP_SCRIPT = "tsc -b && vite build";
 const BUILD_SERVER_SCRIPT =
   "tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json";
 
-const DEV_APP_SCRIPT = "vite";
-const DEV_SERVER_SCRIPT = `${BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps --env-file-if-exists=.env dist/server/main.js'`;
+//  --env-file-if-exists=.env
 
-const START_SCRIPT =
-  "node --enable-source-maps --env-file-if-exists=.env dist/server/main.js";
+const DEV_APP_SCRIPT = "vite";
+const DEV_SERVER_SCRIPT = `${BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps dist/server/main.js'`;
+
+const START_SCRIPT = "node --enable-source-maps dist/server/main.js";
 
 const AUTH_GENERATE_SCRIPT = "npx @better-auth/cli generate";
 

@@ -2,11 +2,28 @@
     "json.schemas": [
         {
             "url": "https://cdn.jsdelivr.net/npm/tsup/schema.json",
-            "fileMatch": [
-                "package.json",
-                "tsup.config.json"
-            ]
+            "fileMatch": ["package.json", "tsup.config.json"]
         }
     ],
-    "editor.formatOnSave": true
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.biome": "explicit",
+        "quickfix.biome": "explicit",
+        "source.fixAll.ts": "explicit",
+        "source.sortImports": "explicit",
+        "source.removeUnusedImports": "always"
+    },
+    "editor.formatOnSave": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

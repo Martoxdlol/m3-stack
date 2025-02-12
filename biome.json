@@ -1,28 +1,17 @@
 {
     "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "vcs": {
-        "enabled": false,
-        "clientKind": "git",
-        "useIgnoreFile": false
-    },
     "files": {
-        "ignoreUnknown": false,
-        "ignore": []
+        "ignore": ["**/.next", "**/public", "**/.turbo", "**/typescript/*.json", "**/tsconfig.json"],
+        "include": ["**/*.js", "**/*.ts", "**/*.tsx", "**/*.json", "**/*.jsonc"]
+    },
+    "organizeImports": {
+        "enabled": true
     },
     "formatter": {
         "indentWidth": 4,
         "indentStyle": "space",
         "lineWidth": 120,
         "lineEnding": "lf"
-    },
-    "organizeImports": {
-        "enabled": true
-    },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "recommended": true
-        }
     },
     "javascript": {
         "formatter": {
@@ -31,6 +20,25 @@
             "trailingCommas": "all",
             "semicolons": "asNeeded",
             "quoteProperties": "asNeeded"
+        },
+        "linter": {
+            "enabled": true
+        }
+    },
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "defaultBranch": "main"
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "style": {
+                "noNonNullAssertion": "off"
+            },
+            "suspicious": {
+                "noExplicitAny": "off"
+            }
         }
     }
 }
