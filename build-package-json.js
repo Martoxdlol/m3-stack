@@ -4,7 +4,9 @@ const pkg = JSON.parse(await readFile('./package.json', 'utf-8'))
 
 const exportsNames = Object.keys(pkg.tsup.entry)
 
-const pkgExports = {}
+const pkgExports = {
+    ...pkg['publish-exports'],
+}
 
 for (const name of exportsNames) {
     pkgExports[`./${name}`] = {
