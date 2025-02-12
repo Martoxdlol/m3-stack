@@ -1,8 +1,9 @@
-import { Hono } from "hono";
 import { serve } from '@hono/node-server'
-import { createDatabase, type DBType } from './db'
-import { type AuthType, createAuth } from "./auth";
 import 'dotenv/config'
+import { Hono } from 'hono'
+import { type AuthType, createAuth } from './auth'
+import { type DBType, createDatabase } from './db'
+import { tRPCHandler } from './trpc/handler'
 
 declare module 'hono' {
     interface ContextVariableMap {
@@ -17,27 +18,29 @@ export async function main() {
 
     const app = new Hono()
         .use(async (c, next) => {
-            c.set("db", db)
-            c.set("auth", auth)
+            c.set('db', db)
+            c.set('auth', auth)
             return next()
         })
-        .get("/api", async (c) => {
-            return c.text("Hello, World!")
+        .get('/api', async (c) => {
+            return c.text('Hello, World!')
+        })
+        .use('/api/trpc/*', async (c) => {
+            return tRPCHandler(c)
         })
 
-    app.on(["POST", "GET"], "/api/auth/*", (c) => {
-        return auth.handler(c.req.raw);
-    });
+    app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+        return auth.handler(c.req.raw)
+    })
 
     const server = serve({
         fetch: app.fetch,
         port: 3999,
-        hostname: '0.0.0.0'
+        hostname: '0.0.0.0',
     })
 
-
     server.on('listening', () => {
-        const addr = server.address() as { address: string, port: number }
+        const addr = server.address() as { address: string; port: number }
 
         console.log('Server listening on', addr)
     })

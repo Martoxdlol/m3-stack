@@ -1,92 +1,84 @@
 {
-  "name": "m3-stack-source",
-  "publish-name": "m3-stack",
-  "version": "0.0.1",
-  "description": "",
-  "license": "MIT",
-  "author": "Tomás Cichero <martoxdlol@gmail.com>",
-  "type": "module",
-  "private": true,
-  "exports": {
-    "./react": "./src/react/index.ts",
-    "./vite": "./src/vite/index.ts",
-    "./bin": "./src/bin/index.ts",
-    "./server": "./src/server/index.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./helpers": "./src/helpers/index.ts",
-    "./drizzle": "./src/drizzle/index.ts"
-  },
-  "publish-exports": {
-    "./tsconfig": "./tsconfig.json",
-    "./biome": "./biome.json"
-  },
-  "publish-bin": {
-    "m3-stack": "./bin.js"
-  },
-  "tsup": {
-    "entry": {
-      "react": "src/react/index.ts",
-      "vite": "src/vite/index.ts",
-      "bin": "src/bin/index.ts",
-      "server": "src/server/index.ts",
-      "hooks": "src/hooks/index.ts",
-      "helpers": "src/helpers/index.ts",
-      "drizzle": "src/drizzle/index.ts"
+    "name": "m3-stack-source",
+    "publish-name": "m3-stack",
+    "version": "0.0.2",
+    "description": "",
+    "license": "MIT",
+    "author": "Tomás Cichero <martoxdlol@gmail.com>",
+    "type": "module",
+    "private": true,
+    "exports": {
+        "./react": "./src/react/index.ts",
+        "./vite": "./src/vite/index.ts",
+        "./bin": "./src/bin/index.ts",
+        "./server": "./src/server/index.ts",
+        "./hooks": "./src/hooks/index.ts",
+        "./helpers": "./src/helpers/index.ts",
+        "./drizzle": "./src/drizzle/index.ts"
     },
-    "splitting": false,
-    "sourcemap": true,
-    "clean": true,
-    "dts": true,
-    "target": [
-      "node20"
-    ],
-    "format": [
-      "cjs",
-      "esm"
-    ],
-    "external": [
-      "react",
-      "vite",
-      "@vitejs/plugin-react",
-      "@tailwindcss/vite",
-      "babel-plugin-react-compiler",
-      "@electric-sql/pglite"
-    ]
-  },
-  "workspaces": [
-    "example",
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js"
-  },
-  "devDependencies": {
-    "@better-auth/cli": "^1.1.17",
-    "@biomejs/biome": "^1.9.4",
-    "@tailwindcss/vite": "^4.0.6",
-    "@types/node": "^22.13.1",
-    "@types/react": "^19.0.8",
-    "@vitejs/plugin-react": "^4.3.4",
-    "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
-  },
-  "publish-devDependencies": {
-    "tsup": "^8.3.6",
-    "@tailwindcss/vite": "^4.0.6",
-    "@vitejs/plugin-react": "^4.3.4",
-    "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209"
-  },
-  "dependencies": {
-    "@hono/node-server": "^1.13.8",
-    "hono": "^4.7.0",
-    "nanoid": "^5.0.9",
-    "tailwindcss": "^4.0.6",
-    "vite": "^6.1.0"
-  },
-  "peerDependencies": {
-    "drizzle-kit": "any",
-    "drizzle-orm": "any",
-    "react": "^19.0.0"
-  }
+    "publish-exports": {
+        "./tsconfig": "./tsconfig.json",
+        "./biome": "./biome.json"
+    },
+    "publish-bin": {
+        "m3-stack": "./bin.js"
+    },
+    "tsup": {
+        "entry": {
+            "react": "src/react/index.ts",
+            "vite": "src/vite/index.ts",
+            "bin": "src/bin/index.ts",
+            "server": "src/server/index.ts",
+            "hooks": "src/hooks/index.ts",
+            "helpers": "src/helpers/index.ts",
+            "drizzle": "src/drizzle/index.ts"
+        },
+        "splitting": false,
+        "sourcemap": true,
+        "clean": true,
+        "dts": true,
+        "target": ["node20"],
+        "format": ["cjs", "esm"],
+        "external": [
+            "react",
+            "vite",
+            "@vitejs/plugin-react",
+            "@tailwindcss/vite",
+            "babel-plugin-react-compiler",
+            "@electric-sql/pglite"
+        ]
+    },
+    "workspaces": ["example", "dist"],
+    "scripts": {
+        "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js"
+    },
+    "devDependencies": {
+        "@better-auth/cli": "^1.1.17",
+        "@biomejs/biome": "^1.9.4",
+        "@tailwindcss/vite": "^4.0.6",
+        "@types/node": "^22.13.1",
+        "@types/react": "^19.0.8",
+        "@vitejs/plugin-react": "^4.3.4",
+        "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
+        "tsup": "^8.3.6",
+        "typescript": "^5.7.3"
+    },
+    "publish-devDependencies": {
+        "tsup": "^8.3.6",
+        "@tailwindcss/vite": "^4.0.6",
+        "@vitejs/plugin-react": "^4.3.4",
+        "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209"
+    },
+    "dependencies": {
+        "@hono/node-server": "^1.13.8",
+        "hono": "^4.7.0",
+        "nanoid": "^5.0.9",
+        "tailwindcss": "^4.0.6",
+        "vite": "^6.1.0"
+    },
+    "peerDependencies": {
+        "drizzle-kit": "any",
+        "drizzle-orm": "any",
+        "react": "^19.0.0"
+    }
 }

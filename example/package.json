@@ -1,39 +1,44 @@
 {
-  "name": "m3-app",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "m3-stack dev",
-    "build": "m3-stack build",
-    "build:app": "m3-stack build:app",
-    "build:server": "m3-stack build:server",
-    "preview": "m3-stack preview",
-    "auth:generate": "m3-stack auth:generate",
-    "db:push": "m3-stack db:push",
-    "start": "m3-stack start",
-    "m3-stack": "m3-stack"
-  },
-  "dependencies": {
-    "@electric-sql/pglite": "^0.2.17",
-    "better-auth": "^1.1.17",
-    "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.3",
-    "hono": "^4.7.0",
-    "m3-stack": "*",
-    "postgres": "^3.4.5",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.1.5"
-  },
-  "devDependencies": {
-    "@better-auth/cli": "^1.1.17",
-    "@biomejs/biome": "^1.9.4",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
-    "drizzle-kit": "^0.30.4",
-    "globals": "^15.14.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.1.0"
-  }
+    "name": "m3-app",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "m3-stack dev",
+        "build": "m3-stack build",
+        "build:app": "m3-stack build:app",
+        "build:server": "m3-stack build:server",
+        "preview": "m3-stack preview",
+        "auth:generate": "m3-stack auth:generate",
+        "db:push": "m3-stack db:push",
+        "start": "m3-stack start",
+        "m3-stack": "m3-stack"
+    },
+    "dependencies": {
+        "@electric-sql/pglite": "^0.2.17",
+        "@tanstack/react-query": "^5.66.0",
+        "@trpc/client": "^11.0.0-rc.764",
+        "@trpc/react-query": "^11.0.0-rc.764",
+        "@trpc/server": "^11.0.0-rc.764",
+        "better-auth": "^1.1.17",
+        "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.39.3",
+        "hono": "^4.7.0",
+        "m3-stack": "*",
+        "postgres": "^3.4.5",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-router": "^7.1.5",
+        "superjson": "^2.2.2"
+    },
+    "devDependencies": {
+        "@better-auth/cli": "^1.1.17",
+        "@biomejs/biome": "^1.9.4",
+        "@types/react": "^19.0.8",
+        "@types/react-dom": "^19.0.3",
+        "drizzle-kit": "^0.30.4",
+        "globals": "^15.14.0",
+        "typescript": "~5.7.2",
+        "vite": "^6.1.0"
+    }
 }

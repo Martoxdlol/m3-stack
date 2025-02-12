@@ -1,6 +1,8 @@
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router'
+import { BrowserRouter, Link, Outlet, Route, Routes } from 'react-router'
 import { useSession } from '../lib/auth-client'
-import App from './app'
+import { HomeScreen } from './screens/home'
+import { LoginScreen } from './screens/login'
+import { SignUpScreen } from './screens/signup'
 
 function RequiresAuth(props: { children: React.ReactNode; fallback: React.ReactNode }) {
     const session = useSession()
@@ -44,21 +46,22 @@ export function AppRouter() {
             <Routes>
                 <Route
                     element={
-                        <RequiresAuth fallback='Please login'>
+                        <RequiresAuth fallback={<Link to='/login'>Please login</Link>}>
                             <Outlet />
                         </RequiresAuth>
                     }
                 >
-                    <Route path='/' element={<App />} />
+                    <Route path='/' element={<HomeScreen />} />
                 </Route>
                 <Route
                     element={
-                        <RequiresNotAuth fallback='Please logout'>
+                        <RequiresNotAuth fallback={<Link to='/'>Please logout</Link>}>
                             <Outlet />
                         </RequiresNotAuth>
                     }
                 >
-                    <Route path='/login' element={<App />} />
+                    <Route path='/login' element={<LoginScreen />} />
+                    <Route path='/signup' element={<SignUpScreen />} />
                 </Route>
             </Routes>
         </BrowserRouter>
