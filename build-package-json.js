@@ -29,6 +29,8 @@ export const publishablePkgJson = {
     type: pkg.type,
     exports: pkgExports,
     dependencies: pkg.dependencies,
+    peerDependencies: pkg.peerDependencies,
+    devDependencies: pkg['publish-devDependencies'] ?? pkg.devDependencies,
 }
 
 await writeFile('./dist/package.json', JSON.stringify(publishablePkgJson, null, 2))
