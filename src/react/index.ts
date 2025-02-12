@@ -1,1 +1,1 @@
-export * from "./react-component";
+export * from "./screen";

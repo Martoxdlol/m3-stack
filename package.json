@@ -13,7 +13,8 @@
     "./bin": "./src/bin/index.ts",
     "./server": "./src/server/index.ts",
     "./hooks": "./src/hooks/index.ts",
-    "./helpers": "./src/helpers/index.ts"
+    "./helpers": "./src/helpers/index.ts",
+    "./drizzle": "./src/drizzle/index.ts"
   },
   "publish-exports": {
     "./tsconfig": "./tsconfig.json",
@@ -29,15 +30,15 @@
       "bin": "src/bin/index.ts",
       "server": "src/server/index.ts",
       "hooks": "src/hooks/index.ts",
-      "helpers": "src/helpers/index.ts"
+      "helpers": "src/helpers/index.ts",
+      "drizzle": "src/drizzle/index.ts"
     },
     "splitting": false,
     "sourcemap": true,
     "clean": true,
     "dts": true,
     "target": [
-      "node20",
-      "chrome58"
+      "node20"
     ],
     "format": [
       "cjs",
@@ -48,7 +49,8 @@
       "vite",
       "@vitejs/plugin-react",
       "@tailwindcss/vite",
-      "babel-plugin-react-compiler"
+      "babel-plugin-react-compiler",
+      "@electric-sql/pglite"
     ]
   },
   "workspaces": [
@@ -77,10 +79,13 @@
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "hono": "^4.7.0",
+    "nanoid": "^5.0.9",
     "tailwindcss": "^4.0.6",
     "vite": "^6.1.0"
   },
   "peerDependencies": {
+    "drizzle-kit": "any",
+    "drizzle-orm": "any",
     "react": "^19.0.0"
   }
 }
