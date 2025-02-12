@@ -14,7 +14,8 @@
         "./server": "./src/server/index.ts",
         "./hooks": "./src/hooks/index.ts",
         "./helpers": "./src/helpers/index.ts",
-        "./drizzle": "./src/drizzle/index.ts"
+        "./drizzle": "./src/drizzle/index.ts",
+        "./i18n": "./src/i18n/index.tsx"
     },
     "publish-exports": {
         "./tsconfig": "./tsconfig.json",
@@ -31,7 +32,8 @@
             "server": "src/server/index.ts",
             "hooks": "src/hooks/index.ts",
             "helpers": "src/helpers/index.ts",
-            "drizzle": "src/drizzle/index.ts"
+            "drizzle": "src/drizzle/index.ts",
+            "i18n": "src/i18n/index.tsx"
         },
         "platform": "node",
         "splitting": false,
