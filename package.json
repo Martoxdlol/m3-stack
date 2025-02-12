@@ -13,7 +13,8 @@
     "./bin": "./src/bin/index.ts"
   },
   "publish-exports": {
-    "./tsconfig": "./tsconfig.json"
+    "./tsconfig": "./tsconfig.json",
+    "./biome": "./biome.json"
   },
   "publish-bin": {
     "m3-stack": "./bin.js"
@@ -49,9 +50,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js"
+    "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@tailwindcss/vite": "^4.0.6",
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
