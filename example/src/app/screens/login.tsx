@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { authClient } from '../../lib/auth-client'
+import { getString } from '../../lib/strings-client'
 
 export function LoginScreen() {
     const [email, setEmail] = useState('')
@@ -41,7 +42,7 @@ export function LoginScreen() {
                 </div>
                 <div>
                     <button className='border' type='submit'>
-                        Login
+                        {getString('login')}
                     </button>
                 </div>
             </form>

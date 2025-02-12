@@ -8,9 +8,6 @@ export function createStrings() {
             login: 'Login',
         },
         strings: {
-            en: {
-                login: 'Login',
-            },
             es: {
                 login: 'Iniciar sesión',
             },

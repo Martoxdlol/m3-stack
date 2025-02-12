@@ -1,33 +1,48 @@
-export type I18nOptions<
-    L extends string[],
-    E extends L[number],
-    D extends Record<string, string>,
-    S extends Record<Extract<Omit<L[number], E>, string>, Record<Extract<keyof D, string>, string | null>>,
-> = {
-    supportedLanguages: L
-    defaultStrings: D
-    defaultLanguage: L[number]
-    strings: S
-}
-
 export type I18n<K extends string, L extends string> = {
     get: (key: K, lang: L) => string
     withLang: (lang: L) => I18WithLang<K, L>
+    defaultLanguage: L
 }
 
 export type I18WithLang<K extends string, L extends string> = {
     get: (key: K) => string
     lang: L
+    setLang: (lang: L) => void
+    withLang: (lang: L) => I18WithLang<K, L>
 }
 
+/**
+ * ```ts
+ * const strings = createI18n({
+ *   defaultLanguage: 'en',
+ *   defaultStrings: {
+ *     hello: 'Hello',
+ *   },
+ *   supportedLanguages: ['en', 'es'] as const,
+ *   strings: {
+ *     es: {
+ *       hello: 'Hola',
+ *     },
+ *   }
+ * })
+ *
+ * strings.get('hello', 'en')
+ * ```
+ */
 export function createI18n<
-    L extends string[],
-    E extends L[number],
-    D extends Record<string, string>,
-    S extends Record<Extract<Omit<L[number], E>, string>, Record<Extract<keyof D, string>, string | null>>,
->(opts: I18nOptions<L, E, D, S>): I18n<Extract<keyof D, string>, Extract<L[number], string>> {
+    DefaultLang extends string,
+    SupportedLangs extends string[],
+    DefaultLangStrings extends Record<string, string>,
+    AllStrings extends Partial<Record<SupportedLangs[number], Record<keyof DefaultLangStrings, string | null>>>,
+>(opts: {
+    defaultLanguage: DefaultLang
+    supportedLanguages: SupportedLangs
+    defaultStrings: DefaultLangStrings
+    strings: AllStrings
+}): I18n<Extract<keyof DefaultLangStrings, string>, SupportedLangs[number]> {
     return {
-        get: (key: Extract<keyof D, string>, lang: Extract<L[number], string>): string => {
+        defaultLanguage: opts.defaultLanguage,
+        get: (key: Extract<keyof DefaultLangStrings, string>, lang: SupportedLangs[number]): string => {
             const str = opts.strings[lang]?.[key]
             if (str) return str
             const s = opts.defaultStrings[key]
@@ -38,11 +53,13 @@ export function createI18n<
 
             return s
         },
-        withLang: (
-            lang: Extract<L[number], string>,
-        ): I18WithLang<Extract<keyof D, string>, Extract<L[number], string>> => {
+        withLang: function (
+            defaultLang: SupportedLangs[number],
+        ): I18WithLang<Extract<keyof DefaultLangStrings, string>, SupportedLangs[number]> {
+            const lang = defaultLang
+
             return {
-                get: (key: Extract<keyof D, string>): string => {
+                get: (key: Extract<keyof DefaultLangStrings, string>): string => {
                     const str = opts.strings[lang]?.[key]
                     if (str) return str
                     const s = opts.defaultStrings[key]
@@ -54,20 +71,11 @@ export function createI18n<
                     return s
                 },
                 lang,
+                setLang: function (l: SupportedLangs[number]) {
+                    this.lang = l
+                },
+                withLang: this.withLang,
             }
         },
     }
 }
-
-// const strings = createI18n({
-//     defaultLanguage: 'en',
-//     defaultStrings: {
-//         hello: 'Hello',
-//     },
-//     supportedLanguages: ['en', 'es'],
-//     strings: {
-//         es: {
-//             hello: 'Hola',
-//         },
-//     },
-// })
