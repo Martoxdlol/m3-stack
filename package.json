@@ -8,20 +8,30 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./react": "./src/react/index.ts"
+    "./react": "./src/react/index.ts",
+    "./vite": "./src/vite/index.ts",
+    "./bin": "./src/bin/index.ts"
   },
   "publish-exports": {
     "./tsconfig": "./tsconfig.json"
   },
+  "publish-bin": {
+    "m3-stack": "./bin.js"
+  },
   "tsup": {
     "entry": {
       "react": "src/react/index.ts",
-      "vite": "src/vite/index.ts"
+      "vite": "src/vite/index.ts",
+      "bin": "src/bin/index.ts"
     },
     "splitting": false,
     "sourcemap": true,
     "clean": true,
     "dts": true,
+    "target": [
+      "node20",
+      "chrome58"
+    ],
     "format": [
       "cjs",
       "esm"
@@ -43,6 +53,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.6",
+    "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
     "@vitejs/plugin-react": "^4.3.4",
     "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",

@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "t": "m3-stack build",
     "dev": "vite",
     "build": "run-p build:*",
     "build:app": "tsc -b && vite build",

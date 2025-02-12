@@ -21,6 +21,7 @@ for (const name of exportsNames) {
 
 export const publishablePkgJson = {
     name: pkg['publish-name'] ?? pkg.name,
+    bin: pkg['publish-bin'] ?? pkg.bin,
     version: pkg.version,
     description: pkg.description,
     license: pkg.license,
