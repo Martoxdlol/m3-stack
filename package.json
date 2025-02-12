@@ -61,6 +61,7 @@
     "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js"
   },
   "devDependencies": {
+    "@better-auth/cli": "^1.1.17",
     "@biomejs/biome": "1.9.4",
     "@tailwindcss/vite": "^4.0.6",
     "@types/node": "^22.13.1",

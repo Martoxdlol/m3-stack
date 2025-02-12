@@ -9,7 +9,7 @@
     "build:app": "m3-stack build:app",
     "build:server": "m3-stack build:server",
     "preview": "m3-stack preview",
-    "auth-generate": "npx @better-auth/cli generate",
+    "auth:generate": "m3-stack auth:generate",
     "db:push": "m3-stack db:push",
     "m3-stack": "m3-stack"
   },

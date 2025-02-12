@@ -11,6 +11,9 @@ export function createAuth(opts: { db: DBType }) {
     }),
     emailAndPassword: {
       enabled: true,
+      async sendResetPassword(_data, _request) {
+        // TODO: Send an email to the user with a link to reset their password
+      },
     },
     baseURL: process.env.BASE_URL || "http://localhost:5173",
     trustedOrigins: [BASE_URL],

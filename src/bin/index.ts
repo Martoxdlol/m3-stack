@@ -28,7 +28,12 @@ const BUILD_SERVER_SCRIPT =
   "tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json";
 
 const DEV_APP_SCRIPT = "vite";
-const DEV_SERVER_SCRIPT = `${BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps dist/server/main.js'`;
+const DEV_SERVER_SCRIPT = `${BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps --env-file-if-exists=.env dist/server/main.js'`;
+
+const START_SCRIPT =
+  "node --enable-source-maps --env-file-if-exists=.env dist/server/main.js";
+
+const AUTH_GENERATE_SCRIPT = "npx @better-auth/cli generate";
 
 const DRIZZLE_DB_PUSH_SCRIPT = "drizzle-kit push";
 
@@ -40,7 +45,9 @@ const scripts: Record<string, CMD[][]> = {
   "build:app": [[BUILD_APP_SCRIPT]],
   "build:server": [[BUILD_SERVER_SCRIPT]],
   preview: [["vite preview", DEV_SERVER_SCRIPT]],
+  "auth:generate": [[AUTH_GENERATE_SCRIPT]],
   "db:push": [[DRIZZLE_DB_PUSH_SCRIPT]],
+  start: [[START_SCRIPT]],
 };
 
 async function main() {
@@ -60,6 +67,10 @@ async function main() {
   }
 
   for (const c of cmds) {
+    for (const s of c) {
+      console.log(`Running: ${s}`);
+    }
+
     await Promise.all(c.map((c) => runCmd(c, subArgs)));
   }
 }
