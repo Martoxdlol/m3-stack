@@ -33,6 +33,7 @@
             "helpers": "src/helpers/index.ts",
             "drizzle": "src/drizzle/index.ts"
         },
+        "platform": "node",
         "splitting": false,
         "sourcemap": true,
         "clean": true,
