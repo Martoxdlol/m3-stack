@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
-const getOnLineStatus = (): boolean => (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' ? navigator.onLine : true)
+const getOnLineStatus = (): boolean =>
+    typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' ? navigator.onLine : true
 
 export const useNavigatorOnLine = (): boolean => {
     const [status, setStatus] = useState(getOnLineStatus())

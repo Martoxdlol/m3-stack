@@ -1,3 +1,3 @@
-import { createConfig } from "m3-stack/drizzle";
+import { createConfig } from 'm3-stack/drizzle'
 
-export default createConfig();
+export default createConfig()

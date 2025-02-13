@@ -1,4 +1,4 @@
-import { defaultViteConfig } from "m3-stack/vite";
-import { defineConfig } from "vite";
+import { defaultViteConfig } from 'm3-stack/vite'
+import { defineConfig } from 'vite'
 
-export default defineConfig(defaultViteConfig);
+export default defineConfig(defaultViteConfig)

@@ -1,4 +1,4 @@
-import { type ComponentProps, type CSSProperties, useLayoutEffect } from 'react'
+import { type CSSProperties, type ComponentProps, useLayoutEffect } from 'react'
 
 export const OUTER_DIV_STYLE: CSSProperties = {
     position: 'fixed',
@@ -89,10 +89,7 @@ export function Screen(props: ComponentProps<'div'>) {
 
     return (
         <div {...props} style={{ ...OUTER_DIV_STYLE, ...props.style }}>
-            <div
-                {...props}
-                style={{ ...INNER_DIV_STYLE, ...props.style }}
-            >
+            <div {...props} style={{ ...INNER_DIV_STYLE, ...props.style }}>
                 {props.children}
             </div>
         </div>

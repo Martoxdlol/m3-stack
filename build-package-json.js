@@ -1,4 +1,4 @@
-import { writeFile, readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 
 const pkg = JSON.parse(await readFile('./package.json', 'utf-8'))
 
@@ -12,10 +12,10 @@ for (const name of exportsNames) {
     pkgExports[`./${name}`] = {
         types: {
             import: `./${name}.d.ts`,
-            require: `./${name}.d.ts`
+            require: `./${name}.d.ts`,
         },
         require: `./${name}.js`,
-        import: `./${name}.js`
+        import: `./${name}.js`,
     }
 }
 
