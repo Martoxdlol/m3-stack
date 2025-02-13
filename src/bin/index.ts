@@ -25,7 +25,7 @@ function runCmd(cmd: CMD, args: string[]): Promise<number> {
 
 const BUILD_APP_SCRIPT = 'tsc -b && vite build'
 const BUILD_SERVER_SCRIPT =
-    'npx tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json'
+    'tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json'
 
 //  --env-file-if-exists=.env
 
