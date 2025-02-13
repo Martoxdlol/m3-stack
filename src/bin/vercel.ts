@@ -20,4 +20,16 @@ export async function createVercelOutput() {
         ),
         'utf-8',
     )
+
+    fs.writeFile(
+        './.vercel/output/config.json',
+        JSON.stringify(
+            {
+                version: 3,
+            },
+            null,
+            2,
+        ),
+        'utf-8',
+    )
 }
