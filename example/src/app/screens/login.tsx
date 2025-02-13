@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { authClient } from '../../lib/auth-client'
 import { getString } from '../../lib/strings-client'
 
@@ -19,9 +19,6 @@ export function LoginScreen() {
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <input className='border' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
                 <div>
                     <input
                         placeholder='email'
@@ -46,6 +43,9 @@ export function LoginScreen() {
                     </button>
                 </div>
             </form>
+            <div>
+                <Link to='/signup'>SignUp</Link>
+            </div>
         </div>
     )
 }
