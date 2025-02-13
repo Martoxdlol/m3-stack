@@ -12,7 +12,7 @@
         "auth:generate": "m3-stack auth:generate",
         "db:push": "m3-stack db:push",
         "start": "m3-stack start",
-        "vercel-build": "m3-stack build",
+        "vercel-build": "m3-stack vercel-build",
         "m3-stack": "m3-stack"
     },
     "dependencies": {
@@ -25,7 +25,7 @@
         "dotenv": "^16.4.7",
         "drizzle-orm": "^0.39.3",
         "hono": "^4.7.0",
-        "m3-stack": "*",
+        "m3-stack": "workspace:*",
         "postgres": "^3.4.5",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
