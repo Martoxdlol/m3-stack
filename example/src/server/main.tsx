@@ -13,6 +13,8 @@ declare module 'hono' {
 }
 
 export async function main() {
+    console.log('Starting server')
+
     const db = createDatabase()
     const auth = createAuth({ db })
 
@@ -47,8 +49,15 @@ export async function main() {
         })
     }
 
-    return (req: Request) => app.fetch(req)
+    return app
 }
 
-// THIS MUST BE THE ONLY TOP LEVEL CODE EXECUTION
-export default main()
+const app = await main()
+
+export const GET = app.fetch
+export const POST = app.fetch
+export const PUT = app.fetch
+export const PATCH = app.fetch
+export const DELETE = app.fetch
+export const HEAD = app.fetch
+export const OPTIONS = app.fetch

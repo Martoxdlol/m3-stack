@@ -7,19 +7,82 @@ import { resolve } from 'node:path'
 
 const require = createRequire(import.meta.url)
 
+function requireResolveSafe(id: string) {
+    try {
+        return require.resolve(id)
+    } catch {
+        return null
+    }
+}
+
 export async function buildServer() {
-    const pkgJson = JSON.parse(await readFile('package.json', 'utf-8'))
-    const copyFiles = pkgJson.copyFiles as Record<string, string> | undefined
-
-    const peerDepsEntries = Object.entries((pkgJson.peerDependencies as Record<string, string> | undefined) ?? {})
-
-    await rm('dist/server', { recursive: true, force: true }).catch((e) => {
+    await rm('dist', { recursive: true, force: true }).catch((e) => {
         if (e.code !== 'ENOENT') {
             throw e
         }
     })
 
-    const externals = [...builtinModules, ...builtinModules.map((n) => `node:${n}`), ...peerDepsEntries.map(([n]) => n)]
+    const pkgJson = JSON.parse(await readFile('package.json', 'utf-8'))
+    const copyFiles = pkgJson.copyFiles as Record<string, string> | undefined
+
+    const peerDepsEntries = Object.entries((pkgJson.peerDependencies as Record<string, string> | undefined) ?? {})
+
+    const currentDir = resolve(process.cwd())
+
+    const newPkgJsonDeps: Record<string, string> = {}
+
+    const copyDeps: { name: string; version: string }[] = []
+
+    for (const [name, version] of peerDepsEntries) {
+        copyDeps.push({ name, version })
+    }
+
+    while (copyDeps.length > 0) {
+        const dep = copyDeps.pop()!
+        const depName = dep.name
+        const version = dep.version
+        const path = requireResolveSafe(depName)
+
+        if (!path) {
+            console.log(`Skipping ${depName} as external dep. Could not resolve path`)
+            continue
+        }
+
+        let basePath = ''
+
+        for (let c = 0; c < path.length; c++) {
+            const cdir = currentDir[c]
+            const cpath = path[c]
+            if (cpath !== cdir) {
+                basePath = path.slice(0, c)
+                break
+            }
+        }
+
+        const moduleDir = resolve(basePath, 'node_modules', depName)
+        const modulePkgJson = JSON.parse(await readFile(resolve(moduleDir, 'package.json'), 'utf-8'))
+
+        console.log(`Using ${depName} as external dep. Copy: ${moduleDir} to dist/node_modules/${depName}`)
+
+        await cp(moduleDir, `dist/node_modules/${depName}`, { recursive: true, force: true })
+
+        newPkgJsonDeps[depName] = version
+
+        const modPeerDeps = Object.entries((modulePkgJson.peerDependencies as Record<string, string> | undefined) ?? {})
+        const modProdDeps = Object.entries((modulePkgJson.dependencies as Record<string, string> | undefined) ?? {})
+        const modDeps = [...modPeerDeps, ...modProdDeps]
+        for (const [name, version] of modDeps) {
+            if (newPkgJsonDeps[name] === undefined) {
+                copyDeps.push({ name, version })
+            }
+        }
+    }
+
+    const externals = [
+        ...builtinModules,
+        ...builtinModules.map((n) => `node:${n}`),
+        ...Object.entries(newPkgJsonDeps).map(([n]) => n),
+    ]
 
     const r = await esbuild.build({
         entryPoints: ['src/server/main.tsx'],
@@ -30,6 +93,7 @@ export async function buildServer() {
         tsconfig: 'tsconfig.json',
         target: 'esnext',
         platform: 'neutral',
+        keepNames: true,
         treeShaking: true,
         packages: 'bundle',
         external: externals,
@@ -48,33 +112,6 @@ export async function buildServer() {
 
     for (const f of r.outputFiles ?? []) {
         console.log(f.path, f.text)
-    }
-
-    const currentDir = resolve(process.cwd())
-
-    const newPkgJsonDeps: Record<string, string> = {}
-
-    for (const [depName, version] of peerDepsEntries) {
-        const path = require.resolve(depName)
-
-        let basePath = ''
-
-        for (let c = 0; c < path.length; c++) {
-            const cdir = currentDir[c]
-            const cpath = path[c]
-            if (cpath !== cdir) {
-                basePath = path.slice(0, c)
-                break
-            }
-        }
-
-        const moduleDir = resolve(basePath, 'node_modules', depName)
-
-        console.log(`Copying ${moduleDir} to dist/node_modules/${depName}`)
-
-        await cp(moduleDir, `dist/node_modules/${depName}`, { recursive: true, force: true })
-
-        newPkgJsonDeps[depName] = version
     }
 
     for (const [from, to] of Object.entries(copyFiles ?? {})) {
