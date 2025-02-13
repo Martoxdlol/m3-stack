@@ -1,11 +1,8 @@
-import type { PgTransaction } from "drizzle-orm/pg-core";
-import type {
-  PostgresJsDatabase,
-  PostgresJsQueryResultHKT,
-} from "drizzle-orm/postgres-js";
-import * as schema from "./schema";
-import type { ExtractTablesWithRelations } from "drizzle-orm";
-import { createDatabasePGDatabase } from "m3-stack/server";
+import type { ExtractTablesWithRelations } from 'drizzle-orm'
+import type { PgTransaction } from 'drizzle-orm/pg-core'
+import type { PostgresJsDatabase, PostgresJsQueryResultHKT } from 'drizzle-orm/postgres-js'
+import { createDatabasePGDatabase } from 'm3-stack/server'
+import * as schema from './schema'
 
 /**
  * !  IMPORTANT ¡¡¡
@@ -24,7 +21,7 @@ import { createDatabasePGDatabase } from "m3-stack/server";
  * }
  */
 export function createDatabase() {
-  return createDatabasePGDatabase({ schema });
+    return createDatabasePGDatabase({ schema })
 }
 
 /**
@@ -32,15 +29,11 @@ export function createDatabase() {
  *
  * Useful when you need to pass a db into a function (do not import database globally).
  */
-export type DBType = PostgresJsDatabase<typeof schema>;
+export type DBType = PostgresJsDatabase<typeof schema>
 /**
  * The type of a transaction. Useful when you need to pass a tx into a function.
  */
-export type TXType = PgTransaction<
-  PostgresJsQueryResultHKT,
-  typeof schema,
-  ExtractTablesWithRelations<typeof schema>
->;
+export type TXType = PgTransaction<PostgresJsQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>
 
 /**
  * Represents a database or a database transaction (they are very similar).
@@ -48,6 +41,6 @@ export type TXType = PgTransaction<
  * Useful when you need to pass a db into a function and you don't know if it is running inside a transaction (so the db is a tx)
  * or not (so the db is a db).
  */
-export type DBTX = DBType | TXType;
+export type DBTX = DBType | TXType
 
-export { schema };
+export { schema }
