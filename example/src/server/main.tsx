@@ -51,4 +51,4 @@ export async function main() {
 }
 
 // THIS MUST BE THE ONLY TOP LEVEL CODE EXECUTION
-export default await main()
+export default main()

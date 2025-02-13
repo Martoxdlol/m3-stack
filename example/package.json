@@ -15,8 +15,8 @@
         "vercel-build": "m3-stack vercel-build",
         "m3-stack": "m3-stack"
     },
+    "copyFiles": {},
     "dependencies": {
-        "@electric-sql/pglite": "^0.2.17",
         "@tanstack/react-query": "^5.66.0",
         "@trpc/client": "^11.0.0-rc.764",
         "@trpc/react-query": "^11.0.0-rc.764",
@@ -41,5 +41,8 @@
         "globals": "^15.14.0",
         "typescript": "~5.7.2",
         "vite": "^6.1.0"
+    },
+    "peerDependencies": {
+        "@electric-sql/pglite": "^0.2.17"
     }
 }
