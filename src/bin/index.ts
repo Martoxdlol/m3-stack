@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process'
+import { createVercelOutput } from './vercel'
 
 type CMD = string | ((args: string[]) => Promise<void>)
 
@@ -49,6 +50,7 @@ const scripts: Record<string, CMD[][]> = {
     'auth:generate': [[AUTH_GENERATE_SCRIPT]],
     'db:push': [[DRIZZLE_DB_PUSH_SCRIPT]],
     start: [[START_SCRIPT]],
+    'vercel-build': [[BUILD_APP_SCRIPT, BUILD_SERVER_SCRIPT], [createVercelOutput], ['echo Vercel build ready!']],
 }
 
 async function main() {
