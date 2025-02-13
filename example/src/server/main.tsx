@@ -44,7 +44,9 @@ export async function main() {
 
         console.log('Server listening on', addr)
     })
+
+    return server
 }
 
 // THIS MUST BE THE ONLY TOP LEVEL CODE EXECUTION
-main()
+export default await main()
