@@ -13,8 +13,6 @@ declare module 'hono' {
 }
 
 export async function main() {
-    console.log('Starting server')
-
     const db = createDatabase()
     const auth = createAuth({ db })
 

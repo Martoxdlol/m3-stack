@@ -16,6 +16,9 @@
         "m3-stack": "m3-stack"
     },
     "copyFiles": {},
+    "vercelRouteConfig": {
+        "maxDuration": 10
+    },
     "dependencies": {
         "@tanstack/react-query": "^5.66.0",
         "@trpc/client": "^11.0.0-rc.764",

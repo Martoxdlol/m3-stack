@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises'
 
 export async function createVercelOutput() {
+    const pkgJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
+
     await fs.rm('./.vercel/output', { force: true, recursive: true }).catch((e) => {
         if (e.code !== 'ENOENT') throw e
     })
@@ -24,10 +26,10 @@ export async function createVercelOutput() {
             {
                 runtime: 'nodejs22.x',
                 handler: 'main.js',
-                maxDuration: 3,
                 launcherType: 'Nodejs',
                 shouldAddHelpers: true,
                 shouldAddSourcemapSupport: true,
+                ...pkgJson.vercelRouteConfig,
             },
             null,
             2,
@@ -43,10 +45,12 @@ export async function createVercelOutput() {
         JSON.stringify(
             {
                 version: 3,
+                ...pkgJson.vercel?.config,
                 routes: [
                     { src: '/api/(.*)', dest: '/api' },
                     { src: '/(.*)', dest: '/$1' },
                     { src: '/(.*)', dest: '/index.html' },
+                    ...(pkgJson.vercel?.routes ?? []),
                 ],
             },
             null,
