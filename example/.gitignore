@@ -24,3 +24,8 @@ auth-schema.ts
 *.njsproj
 *.sln
 *.sw?
+.vercel
+
+# Environment
+.env
+.env.local
