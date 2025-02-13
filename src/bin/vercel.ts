@@ -1,11 +1,23 @@
 import fs from 'node:fs/promises'
 
 export async function createVercelOutput() {
-    await fs.cp('./dist/public', './.vercel/output/static', { recursive: true })
-    await fs.cp('./dist/server', './.vercel/output/functions/api', { recursive: true })
+    await fs.rm('./.vercel/output', { force: true, recursive: true }).catch((e) => {
+        if (e.code !== 'ENOENT') throw e
+    })
 
-    fs.writeFile(
-        './.vercel/output/functions/api/.vc-config.json',
+    await fs.mkdir('./.vercel/output/functions/api.func/', { recursive: true }).catch((e) => {
+        if (e.code !== 'EEXIST') throw e
+    })
+
+    await fs.mkdir('./.vercel/output/', { recursive: true }).catch((e) => {
+        if (e.code !== 'EEXIST') throw e
+    })
+
+    await fs.cp('./dist/public', './.vercel/output/static', { recursive: true })
+    await fs.cp('./dist/server', './.vercel/output/functions/api.func', { recursive: true })
+
+    await fs.writeFile(
+        './.vercel/output/functions/api.func/.vc-config.json',
         JSON.stringify(
             {
                 runtime: 'nodejs22.x',
@@ -21,11 +33,15 @@ export async function createVercelOutput() {
         'utf-8',
     )
 
-    fs.writeFile(
+    await fs.writeFile(
         './.vercel/output/config.json',
         JSON.stringify(
             {
                 version: 3,
+                routes: [
+                    { src: '/api/(.*)', dest: '/api' },
+                    { src: '/(.*)', dest: '/index.html' },
+                ],
             },
             null,
             2,

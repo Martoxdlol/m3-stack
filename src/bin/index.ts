@@ -74,7 +74,12 @@ async function main() {
             console.log(`Running: ${s}`)
         }
 
-        await Promise.all(c.map((c) => runCmd(c, subArgs)))
+        const results = await Promise.all(c.map((c) => runCmd(c, subArgs)))
+
+        if (results.some((r) => r !== 0)) {
+            console.error('Command failed')
+            process.exit(1)
+        }
     }
 }
 
