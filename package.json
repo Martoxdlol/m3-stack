@@ -73,6 +73,8 @@
         "drizzle-kit": "any",
         "drizzle-orm": "any",
         "react": "^19.0.0",
+        "esbuild": "^0.25.0",
+        "@douglasneuroinformatics/esbuild-plugin-native-modules": "^1.0.0",
         "typescript": ">=5.0.0"
     }
 }

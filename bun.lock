@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "m3-stack-source",
+      "dependencies": {
+        "@douglasneuroinformatics/esbuild-plugin-native-modules": "^1.0.0",
+      },
       "peerDependencies": {
         "@better-auth/cli": "^1.1.17",
         "@biomejs/biome": "^1.9.4",
@@ -14,6 +17,7 @@
         "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
         "drizzle-kit": "any",
         "drizzle-orm": "any",
+        "esbuild": "^0.25.0",
         "hono": "^4.7.0",
         "nanoid": "^5.0.9",
         "react": "^19.0.0",
@@ -25,7 +29,7 @@
     },
     "dist": {
       "name": "m3-stack",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "bin": {
         "m3-stack": "./bin.js"
       },
@@ -62,7 +66,7 @@
         "dotenv": "^16.4.7",
         "drizzle-orm": "^0.39.3",
         "hono": "^4.7.0",
-        "m3-stack": "latest",
+        "m3-stack": "workspace:*",
         "postgres": "^3.4.5",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -183,6 +187,8 @@
     "@chevrotain/types": ["@chevrotain/types@10.5.0", "", {}, "sha512-f1MAia0x/pAVPWH/T73BJVyO2XU5tI4/iE7cnxb7tqdNTNhQI3Uq3XkqcoteTmD4t1aM0LbHCJOhgIDn07kl2A=="],
 
     "@chevrotain/utils": ["@chevrotain/utils@10.5.0", "", {}, "sha512-hBzuU5+JjB2cqNZyszkDHZgOSrUUT8V3dhgRl8Q9Gp6dAj/H5+KILGjbhDpc3Iy9qmqlm/akuOI2ut9VUtzJxQ=="],
+
+    "@douglasneuroinformatics/esbuild-plugin-native-modules": ["@douglasneuroinformatics/esbuild-plugin-native-modules@1.0.0", "", { "peerDependencies": { "esbuild": "0.x" } }, "sha512-2HE7ACCRijY+N+mKpmM4FRajSZiSdIJVAqRmaLVYqEvrM9Sr80C9kS3ObfFA7EZC6GQVrn7sILxZCgfhdE2lsw=="],
 
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.10.2", "", {}, "sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w=="],
 
@@ -829,8 +835,6 @@
     "fs-minipass/minipass": ["minipass@3.3.6", "", { "dependencies": { "yallist": "^4.0.0" } }, "sha512-DxiNidxSEK+tHG6zOIklvNOwm3hvCrbUrdtzY74U6HKTJxvIDfOUL5W5P2Ghd3DTkhhKPYGqeNUIh5qcM4YBfw=="],
 
     "lru-cache/yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
-
-    "m3-app/m3-stack": ["m3-stack@0.8.0", "", { "peerDependencies": { "@better-auth/cli": "^1.1.17", "@biomejs/biome": "^1.9.4", "@hono/node-server": "^1.13.8", "@tailwindcss/vite": "^4.0.6", "@types/node": "^22.13.1", "@types/react": "^19.0.8", "@vitejs/plugin-react": "^4.3.4", "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209", "drizzle-kit": "any", "drizzle-orm": "any", "hono": "^4.7.0", "nanoid": "^5.0.9", "react": "^19.0.0", "tailwindcss": "^4.0.6", "tsup": "^8.3.6", "typescript": ">=5.0.0", "vite": "^6.1.0" }, "bin": { "m3-stack": "bin.js" } }, "sha512-7d9EWeIExToaQEDZxBalWh8n6lTROx/d5BhMfxRd0QK1UdpTMF3TxF6M9iPR+Mb2ju/23Q8cvvgAIOmx7pyung=="],
 
     "minizlib/minipass": ["minipass@3.3.6", "", { "dependencies": { "yallist": "^4.0.0" } }, "sha512-DxiNidxSEK+tHG6zOIklvNOwm3hvCrbUrdtzY74U6HKTJxvIDfOUL5W5P2Ghd3DTkhhKPYGqeNUIh5qcM4YBfw=="],
 

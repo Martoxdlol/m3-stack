@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process'
+import { buildServer } from './build'
 import { createVercelOutput } from './vercel'
 
 type CMD = string | ((args: string[]) => Promise<void>)
@@ -25,13 +26,13 @@ function runCmd(cmd: CMD, args: string[]): Promise<number> {
 }
 
 const BUILD_APP_SCRIPT = 'tsc -b && vite build'
-const BUILD_SERVER_SCRIPT =
+const DEV_BUILD_SERVER_SCRIPT =
     'tsup src/server/main.tsx --out-dir dist/server --sourcemap false --format esm --target=esnext --tsconfig tsconfig.json'
 
 //  --env-file-if-exists=.env
 
 const DEV_APP_SCRIPT = 'vite'
-const DEV_SERVER_SCRIPT = `${BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps dist/server/main.js'`
+const DEV_SERVER_SCRIPT = `${DEV_BUILD_SERVER_SCRIPT} --watch --onSuccess 'node --enable-source-maps dist/server/main.js'`
 
 const START_SCRIPT = 'node --enable-source-maps dist/server/main.js'
 
@@ -43,14 +44,14 @@ const scripts: Record<string, CMD[][]> = {
     dev: [[DEV_APP_SCRIPT, DEV_SERVER_SCRIPT]],
     'dev:app': [[DEV_APP_SCRIPT]],
     'dev:server': [[DEV_SERVER_SCRIPT]],
-    build: [[BUILD_APP_SCRIPT, BUILD_SERVER_SCRIPT], ['echo build ready!']],
+    build: [[BUILD_APP_SCRIPT, buildServer], ['echo build ready!']],
     'build:app': [[BUILD_APP_SCRIPT]],
-    'build:server': [[BUILD_SERVER_SCRIPT]],
+    'build:server': [[buildServer]],
     preview: [['vite preview', DEV_SERVER_SCRIPT]],
     'auth:generate': [[AUTH_GENERATE_SCRIPT]],
     'db:push': [[DRIZZLE_DB_PUSH_SCRIPT]],
     start: [[START_SCRIPT]],
-    'vercel-build': [[BUILD_APP_SCRIPT, BUILD_SERVER_SCRIPT], [createVercelOutput], ['echo Vercel build ready!']],
+    'vercel-build': [[BUILD_APP_SCRIPT, buildServer], [createVercelOutput], ['echo Vercel build ready!']],
 }
 
 async function main() {
@@ -71,7 +72,7 @@ async function main() {
 
     for (const c of cmds) {
         for (const s of c) {
-            console.log(`Running: ${s}`)
+            console.log(`Running: ${typeof s === 'string' ? s : s.name}`)
         }
 
         const results = await Promise.all(c.map((c) => runCmd(c, subArgs)))

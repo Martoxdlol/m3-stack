@@ -16,7 +16,6 @@ export async function createVercelOutput() {
     await fs.cp('./dist/public', './.vercel/output/static', { recursive: true })
     await fs.cp('./dist/server', './.vercel/output/functions/api.func', { recursive: true })
 
-    await fs.cp('./node_modules', './.vercel/output/functions/api.func/node_modules', { recursive: true })
     await fs.cp('./package.json', './.vercel/output/functions/api.func/package.json', { recursive: true })
 
     await fs.writeFile(
@@ -29,6 +28,20 @@ export async function createVercelOutput() {
                 launcherType: 'Nodejs',
                 shouldAddHelpers: true,
                 shouldAddSourcemapSupport: true,
+            },
+            null,
+            2,
+        ),
+        'utf-8',
+    )
+
+    await fs.writeFile(
+        './.vercel/output/functions/api.func/package.json',
+        JSON.stringify(
+            {
+                name: 'api',
+                type: 'module',
+                main: 'main.js',
             },
             null,
             2,
