@@ -1,7 +1,7 @@
 {
     "name": "m3-stack-source",
     "publish-name": "m3-stack",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "",
     "license": "MIT",
     "author": "Tomás Cichero <martoxdlol@gmail.com>",
@@ -53,35 +53,37 @@
     },
     "workspaces": ["example", "dist"],
     "scripts": {
-        "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js"
+        "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js",
+        "publish": "cd dist && npm publish"
     },
     "devDependencies": {
-        "@better-auth/cli": "^1.1.17",
-        "@biomejs/biome": "^1.9.4",
+        "tsup": "^8.3.6",
         "@tailwindcss/vite": "^4.0.6",
+        "@vitejs/plugin-react": "^4.3.4",
+        "@better-auth/cli": "^1.1.17",
+        "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
         "@types/node": "^22.13.1",
         "@types/react": "^19.0.8",
-        "@vitejs/plugin-react": "^4.3.4",
-        "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
-        "tsup": "^8.3.6",
-        "typescript": "^5.7.3"
+        "@biomejs/biome": "^1.9.4"
     },
     "publish-devDependencies": {
         "tsup": "^8.3.6",
         "@tailwindcss/vite": "^4.0.6",
         "@vitejs/plugin-react": "^4.3.4",
-        "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209"
+        "@better-auth/cli": "^1.1.17",
+        "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
+        "@types/node": "^22.13.1",
+        "@types/react": "^19.0.8"
     },
-    "dependencies": {
+    "peerDependencies": {
         "@hono/node-server": "^1.13.8",
         "hono": "^4.7.0",
         "nanoid": "^5.0.9",
         "tailwindcss": "^4.0.6",
-        "vite": "^6.1.0"
-    },
-    "peerDependencies": {
+        "vite": "^6.1.0",
         "drizzle-kit": "any",
         "drizzle-orm": "any",
-        "react": "^19.0.0"
+        "react": "^19.0.0",
+        "typescript": ">=5.0.0"
     }
 }

@@ -33,19 +33,21 @@ export async function main() {
         return auth.handler(c.req.raw)
     })
 
-    const server = serve({
-        fetch: app.fetch,
-        port: 3999,
-        hostname: '0.0.0.0',
-    })
+    if (!process.env.VERCEL && !process.env.NO_LISTEN) {
+        const server = serve({
+            fetch: app.fetch,
+            port: 3999,
+            hostname: '0.0.0.0',
+        })
 
-    server.on('listening', () => {
-        const addr = server.address() as { address: string; port: number }
+        server.on('listening', () => {
+            const addr = server.address() as { address: string; port: number }
 
-        console.log('Server listening on', addr)
-    })
+            console.log('Server listening on', addr)
+        })
+    }
 
-    return server
+    return (req: Request) => app.fetch(req)
 }
 
 // THIS MUST BE THE ONLY TOP LEVEL CODE EXECUTION
