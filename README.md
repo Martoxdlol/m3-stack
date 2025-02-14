@@ -7,6 +7,8 @@ frameworks and more.
 
 It is not my first time trying to build a stack, a useful library or a framework. It won't be the last.
 
+## Docs
+
 **THIS IS A WORK IN PROGRESS**
 
 Simple SPA stack for building a web app with react.
