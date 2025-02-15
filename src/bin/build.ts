@@ -3,7 +3,7 @@ import { EsmExternalsPlugin } from '@esbuild-plugins/esm-externals'
 import * as esbuild from 'esbuild'
 import { cp, readFile, rm, writeFile } from 'node:fs/promises'
 import { builtinModules, createRequire } from 'node:module'
-import { resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 
 const require = createRequire(import.meta.url)
 
@@ -59,7 +59,11 @@ export async function buildServer() {
             }
         }
 
-        const moduleDir = resolve(basePath, 'node_modules', depName)
+        if (!resolve(basePath).endsWith('/node_modules')) {
+            basePath = join(basePath, 'node_modules')
+        }
+
+        const moduleDir = resolve(basePath, depName)
         const modulePkgJson = JSON.parse(await readFile(resolve(moduleDir, 'package.json'), 'utf-8'))
 
         console.log(`Using ${depName} as external dep. Copy: ${moduleDir} to dist/node_modules/${depName}`)

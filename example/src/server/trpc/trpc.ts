@@ -1,5 +1,6 @@
 import { TRPCError, initTRPC } from '@trpc/server'
 import SuperJSON from 'superjson'
+import type { Strings } from '../../lib/strings'
 import type { AuthType } from '../auth'
 import type { DBType } from '../db'
 
@@ -7,6 +8,7 @@ export type TRPCContext = {
     req: Request
     db: DBType
     auth: AuthType
+    strings: Strings
 }
 
 /**

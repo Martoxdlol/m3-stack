@@ -8,6 +8,6 @@ export function getString(key: Parameters<(typeof stringsWithLang)['get']>[0]): 
     return stringsWithLang.get(key)
 }
 
-export function setStringsLang(lang: Parameters<(typeof strings)['get']>[1]) {
+export function setLanguage(lang: Parameters<(typeof strings)['get']>[1]) {
     stringsWithLang.setLang(lang)
 }

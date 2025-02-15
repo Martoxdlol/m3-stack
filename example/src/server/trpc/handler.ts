@@ -14,6 +14,7 @@ export function tRPCHandler(c: Context): Promise<Response> {
             auth: c.get('auth'),
             db: c.get('db'),
             req: opts.req,
+            strings: c.get('strings'),
         }),
         onError:
             process.env.NODE_ENV === 'development'
