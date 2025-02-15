@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process'
-import { buildServer } from './build'
+import { buildServerBundle } from './build-server'
 import { createVercelOutput } from './vercel'
 
 type CMD = string | ((args: string[]) => Promise<void>)
@@ -39,6 +39,8 @@ const START_SCRIPT = 'node --enable-source-maps dist/server/main.js'
 const AUTH_GENERATE_SCRIPT = 'npx @better-auth/cli generate'
 
 const DRIZZLE_DB_PUSH_SCRIPT = 'drizzle-kit push'
+
+const buildServer = () => buildServerBundle()
 
 const scripts: Record<string, CMD[][]> = {
     dev: [[DEV_APP_SCRIPT, DEV_SERVER_SCRIPT]],

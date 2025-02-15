@@ -1,6 +1,7 @@
 import { readFile, stat } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { join, resolve } from 'node:path'
+import type { BuildServerOptions } from './build-server'
 
 /**
  * Equivalent to node's `require` function, but works in ESM.
@@ -74,25 +75,43 @@ export function resolveModuleDir(moduleName: string): string | null {
     return join(nodeModulesDir, moduleName)
 }
 
+export type M3StackBuildOptions = {
+    server?: BuildServerOptions | null
+}
+
+export type M3StackOptions = {} & M3StackBuildOptions
+
 export type PackageJson = Record<string, any> & {
     name: string
     version: string
     dependencies?: Record<string, string>
     devDependencies?: Record<string, string>
     peerDependencies?: Record<string, string>
+
+    build?: M3StackBuildOptions | null
+    'm3-stack'?: M3StackOptions | null
 }
 
 /**
- * Read the package.json of a module.
+ * Read the package.json of a module or project path.
  */
-export async function readModulesPackageJson(moduleName: string): Promise<Record<string, PackageJson> | null> {
-    const moduleDir = resolveModuleDir(moduleName)
-    if (!moduleDir) {
-        return null
+export async function readPackageJson(moduleName: string): Promise<PackageJson | null> {
+    let rootDirPath: string
+
+    if (moduleName.startsWith('.') || moduleName.startsWith('/')) {
+        rootDirPath = resolve(moduleName)
+    } else {
+        const moduleDir = resolveModuleDir(moduleName)
+        if (!moduleDir) {
+            return null
+        }
+
+        rootDirPath = moduleDir
     }
 
-    return await readFile(join(moduleDir, 'package.json'), 'utf-8')
-        .then((content) => JSON.parse(content))
+    return await readFile(join(rootDirPath, 'package.json'), 'utf-8')
+        .catch(() => null)
+        .then((content) => (content ? JSON.parse(content) : null))
         .catch(() => null)
 }
 
@@ -106,10 +125,10 @@ export async function readModulesPackageJson(moduleName: string): Promise<Record
  * - ./src/server.js
  * - ...
  */
-export async function findMatchingFile(possiblePaths: string[], possibleExtensions: string[]) {
+export async function findMatchingFile(basePath: string, possiblePaths: string[], possibleExtensions: string[]) {
     for (const path of possiblePaths) {
         for (const ext of possibleExtensions) {
-            const fullPath = resolve(`${path}.${ext}`)
+            const fullPath = resolve(basePath, `${path}.${ext}`)
             const fileStat = await stat(fullPath).catch(() => null)
             if (fileStat?.isFile()) {
                 return fullPath
@@ -118,4 +137,54 @@ export async function findMatchingFile(possiblePaths: string[], possibleExtensio
     }
 
     return null
+}
+
+/**
+ * Merge two objects recursively.
+ *
+ * For example:
+ * - mergeOptionsDeep({ a: { b: 1 } }, { a: { c: 2 } }) -> { a: { b: 1, c: 2 } }
+ */
+export function mergeOptionsDeep(target: Record<string, any>, source: Record<string, any>) {
+    for (const key in source) {
+        if (source[key] instanceof Object) {
+            target[key] = mergeOptionsDeep(target[key] ?? {}, source[key])
+        } else {
+            target[key] = source[key]
+        }
+    }
+
+    return target
+}
+
+/**
+ * Resoles a path that may be a inside a module or not.
+ */
+export function resolvePath(path: string, base?: string): string | null {
+    if (path.startsWith('.') || path.startsWith('/')) {
+        if (base) {
+            return resolve(base, path)
+        }
+
+        return resolve(path)
+    }
+
+    const segments = path.split('/').filter(Boolean)
+    if (segments.length === 0) {
+        return null
+    }
+
+    let moduleName = segments.shift()!
+
+    if (moduleName.startsWith('@')) {
+        moduleName += `/${segments.shift()}`
+    }
+
+    const modPath = resolveModulePath(moduleName)
+
+    if (!modPath) {
+        return null
+    }
+
+    return join(modPath, ...segments)
 }
