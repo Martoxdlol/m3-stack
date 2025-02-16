@@ -77,6 +77,8 @@ export function resolveModuleDir(moduleName: string): string | null {
 
 export type M3StackBuildOptions = {
     server?: BuildServerOptions | null
+    externalDependencies?: string[]
+    copyFiles?: Record<string, string>
 }
 
 export type M3StackOptions = {} & M3StackBuildOptions
@@ -180,7 +182,7 @@ export function resolvePath(path: string, base?: string): string | null {
         moduleName += `/${segments.shift()}`
     }
 
-    const modPath = resolveModulePath(moduleName)
+    const modPath = resolveModuleDir(moduleName)
 
     if (!modPath) {
         return null

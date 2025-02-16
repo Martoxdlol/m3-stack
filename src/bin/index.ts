@@ -44,14 +44,14 @@ const buildServer = () => buildServerBundle()
 
 const scripts: Record<string, CMD[][]> = {
     dev: [[DEV_APP_SCRIPT, DEV_SERVER_SCRIPT]],
-    'dev:app': [[DEV_APP_SCRIPT]],
-    'dev:server': [[DEV_SERVER_SCRIPT]],
+    'dev-app': [[DEV_APP_SCRIPT]],
+    'dev-server': [[DEV_SERVER_SCRIPT]],
     build: [[BUILD_APP_SCRIPT, buildServer], ['echo build ready!']],
-    'build:app': [[BUILD_APP_SCRIPT]],
-    'build:server': [[buildServer]],
+    'build-app': [[BUILD_APP_SCRIPT]],
+    'build-server': [[buildServer]],
     preview: [['vite preview', DEV_SERVER_SCRIPT]],
-    'auth:generate': [[AUTH_GENERATE_SCRIPT]],
-    'db:push': [[DRIZZLE_DB_PUSH_SCRIPT]],
+    'auth-generate': [[AUTH_GENERATE_SCRIPT]],
+    'db-push': [[DRIZZLE_DB_PUSH_SCRIPT]],
     start: [[START_SCRIPT]],
     'vercel-build': [[BUILD_APP_SCRIPT, buildServer], [createVercelOutput], ['echo Vercel build ready!']],
 }

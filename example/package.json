@@ -15,7 +15,10 @@
         "vercel-build": "m3-stack vercel-build",
         "m3-stack": "m3-stack"
     },
-    "copyFiles": {},
+    "build": {
+        "externalDependencies": [],
+        "copyFiles": {}
+    },
     "vercelRouteConfig": {
         "maxDuration": 10
     },

@@ -1,10 +1,10 @@
 import { nativeModulesPlugin } from '@douglasneuroinformatics/esbuild-plugin-native-modules'
 import { EsmExternalsPlugin } from '@esbuild-plugins/esm-externals'
 import * as esbuild from 'esbuild'
-import { cp, rm, writeFile } from 'node:fs/promises'
+import { cp, readdir, rm, writeFile } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import { join, resolve } from 'node:path'
-import { findMatchingFile, mergeOptionsDeep, readPackageJson, resolvePath } from './helpers'
+import { findMatchingFile, mergeOptionsDeep, readPackageJson, resolveModuleDir, resolvePath } from './helpers'
 
 export type BuildServerOptions = {
     /**
@@ -89,8 +89,22 @@ export async function buildServerBundle(opts?: BuildServerOptions) {
 
     if (!opts || opts.includePackageJsonOptions) {
         const pkgJsonServerBuildOpts = pkgJsonContent['m3-stack']?.server ?? pkgJsonContent.build?.server
+        const copyFiles = pkgJsonContent['m3-stack']?.copyFiles ?? pkgJsonContent.build?.copyFiles
+        const externalDependencies =
+            pkgJsonContent['m3-stack']?.externalDependencies ?? pkgJsonContent.build?.externalDependencies
+
         if (pkgJsonServerBuildOpts) {
             options = mergeOptionsDeep(pkgJsonServerBuildOpts, options)
+        }
+
+        if (copyFiles) {
+            options.copyFiles = mergeOptionsDeep(copyFiles, options.copyFiles ?? {})
+        }
+
+        if (externalDependencies) {
+            options.externalDependencies = Array.from(
+                new Set([...(options.externalDependencies ?? []), ...externalDependencies]),
+            )
         }
     }
 
@@ -103,11 +117,6 @@ export async function buildServerBundle(opts?: BuildServerOptions) {
     }
 
     const external = new Set<string>()
-
-    for (const btin of builtinModules) {
-        external.add(btin)
-        external.add(`node:${btin}`)
-    }
 
     for (const dep of options.externalDependencies ?? []) {
         external.add(dep)
@@ -141,6 +150,10 @@ export async function buildServerBundle(opts?: BuildServerOptions) {
     await buildOutputPackageJson({ dependencies: newPkgJsonDeps })
 
     await copyFilesToOutputDir(basePath, options.copyFiles ?? {})
+
+    await removeDistCopiedFiles()
+
+    await copyModulesToDist(Array.from(new Set([...external, ...(options.internalDependencies ?? [])])))
 }
 
 export type RunEsbuildOptions = {
@@ -150,6 +163,13 @@ export type RunEsbuildOptions = {
 }
 
 export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
+    const external = new Set<string>(opts.external)
+
+    for (const btin of builtinModules) {
+        external.add(btin)
+        external.add(`node:${btin}`)
+    }
+
     const r = await esbuild.build({
         entryPoints: ['src/server/main.tsx'],
         bundle: true,
@@ -162,10 +182,10 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
         keepNames: true,
         treeShaking: true,
         packages: 'bundle',
-        external: opts.external,
+        external: Array.from(external),
         plugins: [
             nativeModulesPlugin({ resolveFailure: 'throw' }),
-            EsmExternalsPlugin({ externals: opts.external ?? [] }),
+            EsmExternalsPlugin({ externals: Array.from(external) }),
         ],
     })
 
@@ -215,10 +235,39 @@ export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<s
             throw new Error(`Invalid copy-from path ${from}`)
         }
 
-        console.log(`Copying ${fromResolved} to ${toResolved}`)
+        console.info(`Copying ${fromResolved} to ${toResolved}`)
         await cp(fromResolved, toResolved, { recursive: true, force: true }).catch((err) => {
             console.error(`Failed to copy ${fromResolved} to ${toResolved}`, err)
             throw err
         })
+    }
+}
+
+export async function copyModulesToDist(modules: string[]) {
+    await rm('dist/node_modules', { recursive: true, force: true }).catch((e) => {
+        if (e.code !== 'ENOENT') {
+            throw e
+        }
+    })
+
+    for (const m of modules) {
+        const resolved = resolveModuleDir(m)
+        if (!resolved) {
+            throw new Error(`Module not found: ${m}`)
+        }
+
+        console.info(`Adding module ${m} to output. ${resolved} -> dist/node_modules/${m}`)
+        await cp(resolved, `dist/node_modules/${m}`, { recursive: true, force: true })
+    }
+}
+
+export async function removeDistCopiedFiles() {
+    const distFiles = await readdir('dist')
+    for (const f of distFiles) {
+        if (['public', 'server', 'node_modules', 'package.json'].includes(f)) {
+            continue
+        }
+
+        await rm(`dist/${f}`, { recursive: true, force: true })
     }
 }
