@@ -1,5 +1,6 @@
 import { nativeModulesPlugin } from '@douglasneuroinformatics/esbuild-plugin-native-modules'
 import { EsmExternalsPlugin } from '@esbuild-plugins/esm-externals'
+import type { BuildOptions } from 'esbuild'
 import * as esbuild from 'esbuild'
 import { cp, readdir, rm, writeFile } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
@@ -160,6 +161,7 @@ export type RunEsbuildOptions = {
     entryPoint: string
     sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both'
     external?: string[]
+    watch?: boolean
 }
 
 export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
@@ -170,7 +172,7 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
         external.add(`node:${btin}`)
     }
 
-    const r = await esbuild.build({
+    const esbuildOpts: BuildOptions = {
         entryPoints: ['src/server/main.tsx'],
         bundle: true,
         outfile: 'dist/server/main.js',
@@ -187,7 +189,17 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
             nativeModulesPlugin({ resolveFailure: 'throw' }),
             EsmExternalsPlugin({ externals: Array.from(external) }),
         ],
-    })
+    }
+
+    if (opts.watch) {
+        const ctx = await esbuild.context(esbuildOpts)
+
+        await ctx.watch()
+
+        return
+    }
+
+    const r = await esbuild.build(esbuildOpts)
 
     if (r.errors.length > 0) {
         console.error('Server build failed')
