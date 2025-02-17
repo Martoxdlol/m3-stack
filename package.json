@@ -15,7 +15,8 @@
         "./hooks": "./src/hooks/index.ts",
         "./helpers": "./src/helpers/index.ts",
         "./drizzle": "./src/drizzle/index.ts",
-        "./i18n": "./src/i18n/index.tsx"
+        "./i18n": "./src/i18n/index.tsx",
+        "./config": "./src/config/index.ts"
     },
     "publish-exports": {
         "./tsconfig": "./tsconfig.json",
@@ -33,7 +34,8 @@
             "hooks": "src/hooks/index.ts",
             "helpers": "src/helpers/index.ts",
             "drizzle": "src/drizzle/index.ts",
-            "i18n": "src/i18n/index.tsx"
+            "i18n": "src/i18n/index.tsx",
+            "config": "src/config/index.ts"
         },
         "platform": "node",
         "splitting": false,
@@ -48,7 +50,12 @@
             "@vitejs/plugin-react",
             "@tailwindcss/vite",
             "babel-plugin-react-compiler",
-            "@electric-sql/pglite"
+            "@electric-sql/pglite",
+            "better-auth",
+            "drizzle-kit",
+            "drizzle-orm",
+            "lilconfig",
+            "esbuild"
         ]
     },
     "workspaces": ["example", "dist"],
@@ -56,8 +63,16 @@
         "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js",
         "publish": "cd dist && npm publish"
     },
+    "dependencies": {
+        "@chialab/esbuild-plugin-meta-url": "^0.18.2",
+        "@douglasneuroinformatics/esbuild-plugin-native-modules": "^1.0.0",
+        "@esbuild-plugins/esm-externals": "^0.1.2",
+        "c12": "^2.0.2",
+        "cac": "^6.7.14",
+        "jiti": "^2.4.2",
+        "tsup": "^8.3.6"
+    },
     "peerDependencies": {
-        "tsup": "^8.3.6",
         "@tailwindcss/vite": "^4.0.6",
         "@vitejs/plugin-react": "^4.3.4",
         "@better-auth/cli": "^1.1.17",
@@ -73,10 +88,12 @@
         "drizzle-kit": "any",
         "drizzle-orm": "any",
         "react": "^19.0.0",
+        "better-auth": "^1.1.18",
+        "source-map-support": "^0.5.21",
         "esbuild": "^0.25.0",
-        "@douglasneuroinformatics/esbuild-plugin-native-modules": "^1.0.0",
-        "@chialab/esbuild-plugin-meta-url": "^0.18.2",
-        "@esbuild-plugins/esm-externals": "^0.1.2",
         "typescript": ">=5.0.0"
+    },
+    "devDependencies": {
+        "@types/source-map-support": "^0.5.10"
     }
 }

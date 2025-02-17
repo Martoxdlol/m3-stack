@@ -5,7 +5,7 @@ import * as esbuild from 'esbuild'
 import { cp, readdir, rm, writeFile } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import { join, resolve } from 'node:path'
-import { findMatchingFile, mergeOptionsDeep, readPackageJson, resolveModuleDir, resolvePath } from './helpers'
+import { findMatchingFile, mergeOptionsDeep, readPackageJson, resolveModuleDir, resolvePath } from '../helpers'
 
 export type BuildServerOptions = {
     /**

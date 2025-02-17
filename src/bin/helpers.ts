@@ -1,7 +1,9 @@
+import { type StdioOptions, spawn } from 'node:child_process'
+import { statSync } from 'node:fs'
 import { readFile, stat } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { join, resolve } from 'node:path'
-import type { BuildServerOptions } from './build-server'
+import type { BuildServerOptions } from './build/server'
 
 /**
  * Equivalent to node's `require` function, but works in ESM.
@@ -84,6 +86,7 @@ export type M3StackBuildOptions = {
 export type M3StackOptions = {} & M3StackBuildOptions
 
 export type PackageJson = Record<string, any> & {
+    bin?: string | Record<string, string>
     name: string
     version: string
     dependencies?: Record<string, string>
@@ -141,6 +144,24 @@ export async function findMatchingFile(basePath: string, possiblePaths: string[]
     return null
 }
 
+export function findMatchingFileSync(basePath: string, possiblePaths: string[], possibleExtensions: string[]) {
+    for (const path of possiblePaths) {
+        for (const ext of possibleExtensions) {
+            const fullPath = resolve(basePath, `${path}.${ext}`)
+            try {
+                const fileStat = statSync(fullPath)
+                if (fileStat?.isFile()) {
+                    return fullPath
+                }
+            } catch (error) {
+                // Do nothing
+            }
+        }
+    }
+
+    return null
+}
+
 /**
  * Merge two objects recursively.
  *
@@ -189,4 +210,13 @@ export function resolvePath(path: string, base?: string): string | null {
     }
 
     return join(modPath, ...segments)
+}
+
+export function runCommand(cmd: string, args: string[], stdio?: StdioOptions): Promise<number> {
+    return new Promise((resolve) => {
+        spawn(`${cmd} ${args.join(' ')}`.trim(), {
+            stdio: stdio ?? 'inherit',
+            shell: true,
+        }).addListener('exit', (code) => resolve(code ?? -1))
+    })
 }

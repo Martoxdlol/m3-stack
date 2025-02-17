@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 
-export async function createVercelOutput() {
+export async function vercelBuildCommand() {
     const pkgJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
 
     await fs.rm('./.vercel/output', { force: true, recursive: true }).catch((e) => {
