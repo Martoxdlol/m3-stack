@@ -17,6 +17,7 @@ export function spawnServer() {
         env: {
             ...process.env,
             NODE_ENV: 'development',
+            ENABLE_SOURCE_MAPS: 'true',
         },
     })
 }
