@@ -46,7 +46,7 @@ export async function main() {
     if (!process.env.VERCEL && !process.env.NO_LISTEN) {
         const server = serve({
             fetch: app.fetch,
-            port: 3998,
+            port: 3999,
             hostname: '0.0.0.0',
         })
 
