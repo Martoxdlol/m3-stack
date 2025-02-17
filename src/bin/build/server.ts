@@ -63,6 +63,8 @@ export const DEFAULT_SERVER_ENTRY_PATHS = [
     'server',
 ]
 
+export const DEFAULT_EXTERNAL_LIBS = ['@electric-sql/pglite']
+
 export async function buildServerBundleGetOpts(options: BuildServerOptions): Promise<{
     esbuild: RunEsbuildOptions
     newPkgJsonDeps: Record<string, string>
@@ -100,7 +102,7 @@ export async function buildServerBundleGetOpts(options: BuildServerOptions): Pro
         return null
     }
 
-    const external = new Set<string>()
+    const external = new Set<string>(DEFAULT_EXTERNAL_LIBS)
 
     for (const dep of options.externalDependencies ?? []) {
         external.add(dep)

@@ -6,6 +6,18 @@ and backend with nodejs.
 It provides great defaults for creating a new app, bundling backend and frontend code, deploying to providers like Vercel.
 It also provides many importable modules to help you build your app faster.
 
+## Features
+
+- Automatic zero config for
+  - `drizzle-orm` and `drizzle-kit`
+  - `better-auth`
+  - `vite`
+  - `PGLite` for instant local development
+- Zero config for bundling frontend and backend
+- Optional backend and frontend bundling
+- Easy deploy to Vercel
+- Optimized build output
+
 ## Message for a Human
 
 I started this project recently, but in the process I've learnt a lot (more than what already knew) about build tools, cjs, esm,
