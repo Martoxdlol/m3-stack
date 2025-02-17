@@ -8,6 +8,7 @@ import { loadM3StackConfig } from '../config'
 import { betterAuthGenerateCommand } from './auth'
 import { buildCommand, buildDevCommand, buildWatchCommand } from './build'
 import { drizzleKitCommand } from './drizzle-kit'
+import { runCommand } from './helpers'
 import { vercelBuildCommand } from './vercel'
 
 sourceMapSupport.install()
@@ -45,6 +46,10 @@ cli.command('vercel-build', 'Run drizzle-kit with auto detected config').action(
     const config = await loadM3StackConfig()
     await buildCommand(config, argv.slice(3))
     await vercelBuildCommand(config, argv.slice(3))
+})
+
+cli.command('start', 'Start the app. Must be built first').action(async () => {
+    await runCommand('node', ['--enable-source-maps', 'dist/server/main.js', ...argv.slice(3)])
 })
 
 cli.help()

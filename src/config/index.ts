@@ -13,7 +13,11 @@ export function loadM3StackConfigOptions(): LoadConfigOptions {
 export async function loadM3StackConfig(): Promise<M3StackConfig> {
     const data = await loadConfig(loadM3StackConfigOptions())
 
-    // Do things here
+    if (data.configFile) {
+        console.info('Loaded m3-stack config from', data.configFile)
+    } else {
+        console.info('No m3-stack config found. Using defaults.')
+    }
 
     return data.config
 }
@@ -25,7 +29,7 @@ export type M3StackConfig = {
     build?: BuildServerOptions | null
 }
 
-export function createConfig(config: M3StackConfig) {
+export function createConfig(config?: M3StackConfig) {
     return {
         ...config,
     }

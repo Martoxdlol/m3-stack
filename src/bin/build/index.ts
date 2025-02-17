@@ -4,6 +4,7 @@ import { buildServerBundle, watchBuildServerBundle } from './server'
 
 export async function buildCommand(config: M3StackConfig, _args: string[]) {
     await buildServerBundle(config.build ?? {})
+    console.info('Built server bundle. See ./dist')
 }
 
 export async function buildWatchCommand(config: M3StackConfig, _args: string[]) {

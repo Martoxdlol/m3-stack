@@ -6,11 +6,8 @@
     "scripts": {
         "dev": "m3-stack dev",
         "build": "m3-stack build",
-        "build:app": "m3-stack build:app",
-        "build:server": "m3-stack build:server",
-        "preview": "m3-stack preview",
-        "auth:generate": "m3-stack auth:generate",
-        "db:push": "m3-stack db:push",
+        "auth-generate-schema": "m3-stack auth-generate-schema",
+        "db:push": "m3-stack drizzle-kit push",
         "start": "m3-stack start",
         "vercel-build": "m3-stack vercel-build",
         "m3-stack": "m3-stack"
