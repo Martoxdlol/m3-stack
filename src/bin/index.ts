@@ -8,6 +8,7 @@ import { loadM3StackConfig } from '../config'
 import { betterAuthGenerateCommand } from './auth'
 import { buildCommand, buildDevCommand, buildWatchCommand } from './build'
 import { buildClientAppCommand, devClientAppCommand } from './build/client'
+import { createCommand } from './create'
 import { drizzleKitCommand } from './drizzle-kit'
 import { runCommand } from './helpers'
 import { vercelBuildCommand } from './vercel'
@@ -51,6 +52,10 @@ cli.command('vercel-build', 'Run drizzle-kit with auto detected config').action(
 
 cli.command('start', 'Start the app. Must be built first').action(async () => {
     await runCommand('node', ['--enable-source-maps', 'dist/server/main.js', ...argv.slice(3)])
+})
+
+cli.command('create', 'Create a new m3-stack app').action(async () => {
+    await createCommand(argv.slice(3))
 })
 
 cli.help()

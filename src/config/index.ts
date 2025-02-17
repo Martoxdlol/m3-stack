@@ -41,6 +41,7 @@ export type M3StackConfig = {
         environment?: Record<string, string>[]
         memory?: number
         maxDuration?: number
+        routes?: Record<string, string | number | boolean | null>[]
     }
 }
 

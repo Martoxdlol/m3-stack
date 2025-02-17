@@ -47,9 +47,10 @@ export async function vercelBuildCommand(config: M3StackConfig, _args: string[])
             {
                 version: 3,
                 routes: [
-                    ...(config.backendRoutes?.map((route) => ({ src: route, dest: '/api' })) ?? []),
+                    ...(config.backendRoutes?.map((route) => ({ src: `${route}/?(.*)`, dest: '/api' })) ?? []),
                     { src: '/api/?(.*)', dest: '/api' },
                     { src: '/[^.]+', dest: '/', status: 200 },
+                    ...(config.vercel?.routes ?? []),
                 ],
             },
             null,

@@ -4,7 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "m3-stack": {
-        "message": "Hello from m3-stack"
+        "message": "Hello from m3-stack",
+        "backendRoutes": ["/status"]
     },
     "scripts": {
         "dev": "m3-stack dev",
@@ -14,13 +15,6 @@
         "start": "m3-stack start",
         "vercel-build": "m3-stack vercel-build",
         "m3-stack": "m3-stack"
-    },
-    "build": {
-        "externalDependencies": [],
-        "copyFiles": {}
-    },
-    "vercelRouteConfig": {
-        "maxDuration": 10
     },
     "dependencies": {
         "@tanstack/react-query": "^5.66.0",

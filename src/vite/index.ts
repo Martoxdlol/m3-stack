@@ -13,8 +13,10 @@ export const removeUseClientUseServer = {
             return code
         }
 
-        if (lines[0]!.startsWith(`"use `) || lines[0]!.startsWith(`'use `)) {
-            lines.shift()
+        const firstLine = lines[0] ?? ''
+
+        if (firstLine.startsWith(`"use `) || firstLine.startsWith(`'use `)) {
+            lines[0] = ''
         }
 
         return lines.join('\n')
@@ -61,10 +63,28 @@ export function createViteConfig(config?: UserConfig, m3StackConf?: M3StackConfi
         }
     }
 
+    const serverRoutes: Record<string, string> = {}
+
+    for (const route of m3StackConf?.backendRoutes ?? []) {
+        serverRoutes[route] = 'http://localhost:3999'
+    }
+
     const conf: UserConfig = {
         ...defaultViteConfig,
+        ...m3StackConf?.vite,
         ...config,
         plugins: [...pluginsMap.values()],
+        server: {
+            ...defaultViteConfig.server,
+            ...m3StackConf?.vite?.server,
+            ...config?.server,
+            proxy: {
+                ...defaultViteConfig.server.proxy,
+                ...m3StackConf?.vite?.server?.proxy,
+                ...config?.server?.proxy,
+                ...serverRoutes,
+            },
+        },
     }
 
     return conf
