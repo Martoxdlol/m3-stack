@@ -145,6 +145,8 @@ Config target:
 
 ### Create a new app
 
+**WARNING** This command is not working currently. You must create files by hand. Sorry :\(.
+
 ```bash
 npx m3-stack create my-app
 ```
