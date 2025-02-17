@@ -68,7 +68,7 @@ export async function buildServerBundleGetOpts(options: BuildServerOptions): Pro
     newPkgJsonDeps: Record<string, string>
     basePath: string
     external: string[]
-}> {
+} | null> {
     const basePath = resolve(options.basePath ?? process.cwd())
 
     const pkgJsonContent = await readPackageJson(basePath)
@@ -96,7 +96,8 @@ export async function buildServerBundleGetOpts(options: BuildServerOptions): Pro
         : await findMatchingFile(basePath, DEFAULT_SERVER_ENTRY_PATHS, ['js', 'ts', 'jsx', 'tsx'])
 
     if (!entryFile) {
-        throw new Error('Server entry file not found')
+        console.info('Server entry file not found. Skipping server build.')
+        return null
     }
 
     const external = new Set<string>()
@@ -141,6 +142,10 @@ export async function removeDistServerDir() {
 export async function buildServerBundle(options: BuildServerOptions) {
     const opts = await buildServerBundleGetOpts(options)
 
+    if (!opts) {
+        return
+    }
+
     await removeDistServerDir()
 
     await runEsbuildBuildServer(opts.esbuild)
@@ -158,6 +163,10 @@ export async function watchBuildServerBundle(
     options: BuildServerOptions & { onSuccess?: () => void; onFail?: () => void; onStartBuild?: () => void },
 ) {
     const opts = await buildServerBundleGetOpts(options)
+
+    if (!opts) {
+        return
+    }
 
     await removeDistServerDir()
 

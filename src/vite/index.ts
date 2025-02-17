@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import type { UserConfig } from 'vite'
+import type { M3StackConfig } from '../config'
 
 // https://vite.dev/config/
 export const defaultViteConfig = {
@@ -29,3 +30,23 @@ export const defaultViteConfig = {
         outDir: 'dist/public',
     },
 } satisfies UserConfig
+
+export function createViteConfig(config?: UserConfig, m3StackConf?: M3StackConfig): UserConfig {
+    const pluginsMap = new Map<string, any>()
+
+    const allPlugins = [...defaultViteConfig.plugins, ...(m3StackConf?.vite?.plugins || []), ...(config?.plugins || [])]
+
+    for (const plugin of allPlugins) {
+        if (plugin && typeof plugin === 'object' && 'name' in plugin && typeof plugin.name === 'string') {
+            pluginsMap.set(`${plugin.name}`, plugin)
+        }
+    }
+
+    const conf: UserConfig = {
+        ...defaultViteConfig,
+        ...config,
+        plugins: [...pluginsMap.values()],
+    }
+
+    return conf
+}

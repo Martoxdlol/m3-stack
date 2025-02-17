@@ -7,6 +7,7 @@ import sourceMapSupport from 'source-map-support'
 import { loadM3StackConfig } from '../config'
 import { betterAuthGenerateCommand } from './auth'
 import { buildCommand, buildDevCommand, buildWatchCommand } from './build'
+import { buildClientAppCommand, devClientAppCommand } from './build/client'
 import { drizzleKitCommand } from './drizzle-kit'
 import { runCommand } from './helpers'
 import { vercelBuildCommand } from './vercel'
@@ -19,7 +20,7 @@ const cli = cac('m3-stack')
 
 cli.command('build', 'Build the app').action(async () => {
     const config = await loadM3StackConfig()
-    await buildCommand(config, argv.slice(3))
+    await Promise.all([buildCommand(config, argv.slice(3)), buildClientAppCommand(config, argv.slice(3))])
 })
 
 cli.command('build-watch', 'Build the app and watch for changes').action(async () => {
@@ -29,7 +30,7 @@ cli.command('build-watch', 'Build the app and watch for changes').action(async (
 
 cli.command('dev', 'Build the app and watch for changes').action(async () => {
     const config = await loadM3StackConfig()
-    await buildDevCommand(config, argv.slice(3))
+    await Promise.all([buildDevCommand(config, argv.slice(3)), devClientAppCommand(config, argv.slice(3))])
 })
 
 cli.command('auth-generate-schema', 'Generate the better-auth schema').action(async () => {
