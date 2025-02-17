@@ -1,6 +1,6 @@
 # m3-Stack
 
-m3-stack is a library with a set of tools and utilities to build a web app with "single page app" with react
+m3-stack is a library with a set of tools and utilities to build, bundle and deploy web apps with react
 and backend with nodejs.
 
 It provides great defaults for creating a new app, bundling backend and frontend code, deploying to providers like Vercel.
@@ -75,9 +75,63 @@ you will be totally fine, and even much better in many cases.
 
 **THIS IS A WORK IN PROGRESS**
 
-Simple SPA stack for building a web app with react.
+### Create a new app
 
-Will include:
+```bash
+npx m3-stack create my-app
+```
+
+### Building app
+
+Build frontend and backend.
+
+```bash
+npx m3-stack build
+```
+
+Output package can be found in dist folder. You can just copy the output and run it with node.
+You don't need to install any dependencies to run bundled app.
+
+It will automatically search for server entrypoint to bundle it.
+
+Default paths:
+
+- server.{ts,js,tsx,jsx}
+- src/server.{ts,js,tsx,jsx}
+- src/server/index.{ts,js,tsx,jsx}
+- src/server/main.{ts,js,tsx,jsx}
+- server/main.{ts,js,tsx,jsx}
+- server/index.{ts,js,tsx,jsx}
+
+It will automatically search for index html and `public/` dir to bundle client code.
+
+Example dir structure:
+
+```
+my-app/
+  public/
+    index.html (with a script pointing to client/main.tsx)
+  src/
+    server/
+      main.ts
+    client/
+      main.tsx
+```
+
+### Developing app
+
+```bash
+npx m3-stack dev
+```
+
+It will start a dev server for frontend and backend. It will watch for changes and rebuild automatically.
+For the frontend, it will serve index.html on all routes.
+
+For the backend, it will server the backend at '/api'. You can add routes in config.
+
+### Starter template
+
+Include:
 
 - React
 - TailwindCSS
@@ -86,7 +140,7 @@ Will include:
 - tRPC
 - Drizzle ORM
 
-# `better-auth` Setup
+### `better-auth` Setup
 
 1. Run:
 
