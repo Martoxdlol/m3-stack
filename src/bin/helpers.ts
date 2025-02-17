@@ -220,3 +220,20 @@ export function runCommand(cmd: string, args: string[], stdio?: StdioOptions): P
         }).addListener('exit', (code) => resolve(code ?? -1))
     })
 }
+
+export async function resolveRunModuleBinary(moduleName: string, command?: string) {
+    const cmd = command ?? moduleName
+
+    const kitPkgJson = await readPackageJson(moduleName)
+
+    const pkgJsonBin = typeof kitPkgJson?.bin === 'string' ? kitPkgJson.bin : kitPkgJson?.bin?.[cmd]
+    let bin: string | null = null
+    if (pkgJsonBin) {
+        const mod = resolveModuleDir(cmd)
+        if (mod) {
+            bin = join(mod, pkgJsonBin)
+        }
+    }
+
+    return bin ? `node ${bin}` : cmd
+}

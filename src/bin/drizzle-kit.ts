@@ -7,9 +7,8 @@ sourceMapSupport.install()
 
 import { mkdir, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { join } from 'node:path'
 import { createDrizzleConfig, getSchemaPath } from '../drizzle'
-import { readPackageJson, resolveModuleDir, runCommand } from './helpers'
+import { resolveRunModuleBinary, runCommand } from './helpers'
 
 global.require = createRequire(import.meta.url)
 
@@ -89,16 +88,5 @@ export async function drizzleKitCommand(config: M3StackConfig, args: string[]) {
     await writeFile(tmpDrizzleConfPath, `export default ${JSON.stringify(drizzleConfig, null, 4)}`)
     await writeFile(tmpPkgJsonPath, `{"type": "module"}`)
 
-    const kitPkgJson = await readPackageJson('drizzle-kit')
-
-    const pkgJsonBin = typeof kitPkgJson?.bin === 'string' ? kitPkgJson.bin : kitPkgJson?.bin?.['drizzle-kit']
-    let bin: string | null = null
-    if (pkgJsonBin) {
-        const mod = resolveModuleDir('drizzle-kit')
-        if (mod) {
-            bin = join(mod, pkgJsonBin)
-        }
-    }
-
-    await runCommand(bin ? `node ${bin}` : 'drizzle-kit', ['--config', tmpDrizzleConfPath, ...args])
+    await runCommand(await resolveRunModuleBinary('drizzle-kit'), ['--config', tmpDrizzleConfPath, ...args])
 }

@@ -5,7 +5,7 @@ import * as esbuild from 'esbuild'
 import { cp, readdir, rm, writeFile } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import { join, resolve } from 'node:path'
-import { findMatchingFile, mergeOptionsDeep, readPackageJson, resolveModuleDir, resolvePath } from '../helpers'
+import { findMatchingFile, readPackageJson, resolveModuleDir, resolvePath } from '../helpers'
 
 export type BuildServerOptions = {
     /**
@@ -63,8 +63,13 @@ export const DEFAULT_SERVER_ENTRY_PATHS = [
     'server',
 ]
 
-export async function buildServerBundle(opts?: BuildServerOptions) {
-    const basePath = resolve(opts?.basePath ?? process.cwd())
+export async function buildServerBundleGetOpts(options: BuildServerOptions): Promise<{
+    esbuild: RunEsbuildOptions
+    newPkgJsonDeps: Record<string, string>
+    basePath: string
+    external: string[]
+}> {
+    const basePath = resolve(options.basePath ?? process.cwd())
 
     const pkgJsonContent = await readPackageJson(basePath)
 
@@ -84,29 +89,6 @@ export async function buildServerBundle(opts?: BuildServerOptions) {
 
     if (!pkgJsonContent) {
         throw new Error('Project package.json not found')
-    }
-
-    let options: BuildServerOptions = { ...opts }
-
-    if (!opts || opts.includePackageJsonOptions) {
-        const pkgJsonServerBuildOpts = pkgJsonContent['m3-stack']?.server ?? pkgJsonContent.build?.server
-        const copyFiles = pkgJsonContent['m3-stack']?.copyFiles ?? pkgJsonContent.build?.copyFiles
-        const externalDependencies =
-            pkgJsonContent['m3-stack']?.externalDependencies ?? pkgJsonContent.build?.externalDependencies
-
-        if (pkgJsonServerBuildOpts) {
-            options = mergeOptionsDeep(pkgJsonServerBuildOpts, options)
-        }
-
-        if (copyFiles) {
-            options.copyFiles = mergeOptionsDeep(copyFiles, options.copyFiles ?? {})
-        }
-
-        if (externalDependencies) {
-            options.externalDependencies = Array.from(
-                new Set([...(options.externalDependencies ?? []), ...externalDependencies]),
-            )
-        }
     }
 
     const entryFile = options.entryFile
@@ -136,25 +118,77 @@ export async function buildServerBundle(opts?: BuildServerOptions) {
         }
     }
 
-    await rm('dist/server', { recursive: true, force: true }).catch((e) => {
+    return {
+        esbuild: {
+            entryPoint: entryFile,
+            sourcemap: options.sourcemap,
+            external: Array.from(external),
+        },
+        newPkgJsonDeps,
+        basePath,
+        external: Array.from(external),
+    }
+}
+
+export async function removeDistServerDir() {
+    await rm(join('dist/server'), { recursive: true, force: true }).catch((e) => {
         if (e.code !== 'ENOENT') {
             throw e
         }
     })
+}
 
-    await runEsbuildBuildServer({
-        entryPoint: entryFile,
-        sourcemap: options.sourcemap,
-        external: Array.from(external),
-    })
+export async function buildServerBundle(options: BuildServerOptions) {
+    const opts = await buildServerBundleGetOpts(options)
 
-    await buildOutputPackageJson({ dependencies: newPkgJsonDeps })
+    await removeDistServerDir()
 
-    await copyFilesToOutputDir(basePath, options.copyFiles ?? {})
+    await runEsbuildBuildServer(opts.esbuild)
+
+    await buildOutputPackageJson({ dependencies: opts.newPkgJsonDeps })
+
+    await copyFilesToOutputDir(opts.basePath, options.copyFiles ?? {})
 
     await removeDistCopiedFiles()
 
-    await copyModulesToDist(Array.from(new Set([...external, ...(options.internalDependencies ?? [])])))
+    await copyModulesToDist(Array.from(new Set([...opts.external, ...(options.internalDependencies ?? [])])))
+}
+
+export async function watchBuildServerBundle(
+    options: BuildServerOptions & { onSuccess?: () => void; onFail?: () => void; onStartBuild?: () => void },
+) {
+    const opts = await buildServerBundleGetOpts(options)
+
+    await removeDistServerDir()
+
+    await runEsbuildBuildServer({
+        ...opts.esbuild,
+        watch: true,
+        onWatchBuildStart: async () => {
+            console.info('Building server...')
+            options.onStartBuild?.()
+        },
+        async onWatchBuildEnd(result) {
+            if (result.errors.length > 0) {
+                console.error('Server build failed. Check errors above')
+
+                options.onFail?.()
+
+                return
+            }
+
+            await buildOutputPackageJson({ dependencies: opts.newPkgJsonDeps })
+            await copyFilesToOutputDir(opts.basePath, options.copyFiles ?? {}, true)
+            await removeDistCopiedFiles()
+            await copyModulesToDist(
+                Array.from(new Set([...opts.external, ...(options.internalDependencies ?? [])])),
+                true,
+            )
+
+            console.info('Server build done')
+            options.onSuccess?.()
+        },
+    })
 }
 
 export type RunEsbuildOptions = {
@@ -162,6 +196,8 @@ export type RunEsbuildOptions = {
     sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both'
     external?: string[]
     watch?: boolean
+    onWatchBuildStart?: () => void
+    onWatchBuildEnd?: (result: esbuild.BuildResult) => void
 }
 
 export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
@@ -188,6 +224,17 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
         plugins: [
             nativeModulesPlugin({ resolveFailure: 'throw' }),
             EsmExternalsPlugin({ externals: Array.from(external) }),
+            {
+                name: 'watch-events',
+                setup(build) {
+                    build.onStart(() => {
+                        opts.onWatchBuildStart?.()
+                    })
+                    build.onEnd((result) => {
+                        opts.onWatchBuildEnd?.(result)
+                    })
+                },
+            },
         ],
     }
 
@@ -234,7 +281,7 @@ export async function buildOutputPackageJson(opts: BuildOutPkgJsonOpts) {
     )
 }
 
-export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<string, string>) {
+export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<string, string>, silent = false) {
     for (const [from, to] of Object.entries(copyFiles)) {
         if (to.includes('..') || to.startsWith('/')) {
             throw new Error(`Invalid copy-to path ${to}`)
@@ -247,7 +294,10 @@ export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<s
             throw new Error(`Invalid copy-from path ${from}`)
         }
 
-        console.info(`Copying ${fromResolved} to ${toResolved}`)
+        if (!silent) {
+            console.info(`Copying ${fromResolved} to ${toResolved}`)
+        }
+
         await cp(fromResolved, toResolved, { recursive: true, force: true }).catch((err) => {
             console.error(`Failed to copy ${fromResolved} to ${toResolved}`, err)
             throw err
@@ -255,7 +305,7 @@ export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<s
     }
 }
 
-export async function copyModulesToDist(modules: string[]) {
+export async function copyModulesToDist(modules: string[], silent = false) {
     await rm('dist/node_modules', { recursive: true, force: true }).catch((e) => {
         if (e.code !== 'ENOENT') {
             throw e
@@ -268,7 +318,9 @@ export async function copyModulesToDist(modules: string[]) {
             throw new Error(`Module not found: ${m}`)
         }
 
-        console.info(`Adding module ${m} to output. ${resolved} -> dist/node_modules/${m}`)
+        if (!silent) {
+            console.info(`Adding module ${m} to output. ${resolved} -> dist/node_modules/${m}`)
+        }
         await cp(resolved, `dist/node_modules/${m}`, { recursive: true, force: true })
     }
 }

@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
+import type { M3StackConfig } from '../config'
 
-export async function vercelBuildCommand() {
+export async function vercelBuildCommand(_config: M3StackConfig, _args: string[]) {
     const pkgJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
 
     await fs.rm('./.vercel/output', { force: true, recursive: true }).catch((e) => {
