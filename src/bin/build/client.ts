@@ -6,6 +6,11 @@ import { findMatchingFile } from '../helpers'
 
 export async function buildClientAppCommand(config: M3StackConfig, _args: string[]) {
     const customConfigFile = await findMatchingFile(cwd(), ['vite.config'], ['js', 'mjs', 'ts', 'cjs', 'mts', 'cts'])
+    const indexHtml = await findMatchingFile(cwd(), ['index'], ['html'])
+
+    if (!customConfigFile && !indexHtml && !config.vite) {
+        console.info('No vite config or index.html found. Skipping frontend build.')
+    }
 
     let viteConf: UserConfig = createViteConfig(undefined, config)
 
@@ -22,6 +27,11 @@ export async function buildClientAppCommand(config: M3StackConfig, _args: string
 
 export async function devClientAppCommand(config: M3StackConfig, _args: string[]) {
     const customConfigFile = await findMatchingFile(cwd(), ['vite.config'], ['js', 'mjs', 'ts', 'cjs', 'mts', 'cts'])
+    const indexHtml = await findMatchingFile(cwd(), ['index'], ['html'])
+
+    if (!customConfigFile && !indexHtml && !config.vite) {
+        console.info('No vite config or index.html found. Skipping frontend build.')
+    }
 
     let viteConf: UserConfig = createViteConfig(undefined, config)
 
@@ -32,6 +42,7 @@ export async function devClientAppCommand(config: M3StackConfig, _args: string[]
             viteConf = createViteConfig(viteImpConf.config, config)
         }
     }
+
     const server = await createServer(viteConf)
 
     server.bindCLIShortcuts()

@@ -1,9 +1,7 @@
 import fs from 'node:fs/promises'
 import type { M3StackConfig } from '../config'
 
-export async function vercelBuildCommand(_config: M3StackConfig, _args: string[]) {
-    const pkgJson = JSON.parse(await fs.readFile('package.json', 'utf-8'))
-
+export async function vercelBuildCommand(config: M3StackConfig, _args: string[]) {
     await fs.rm('./.vercel/output', { force: true, recursive: true }).catch((e) => {
         if (e.code !== 'ENOENT') throw e
     })
@@ -25,12 +23,14 @@ export async function vercelBuildCommand(_config: M3StackConfig, _args: string[]
         './.vercel/output/functions/api.func/.vc-config.json',
         JSON.stringify(
             {
-                runtime: 'nodejs22.x',
+                runtime: config.vercel?.runtime ?? 'nodejs22.x',
+                regions: config.vercel?.regions,
                 handler: 'main.js',
-                launcherType: 'Nodejs',
                 shouldAddHelpers: true,
                 shouldAddSourcemapSupport: true,
-                ...pkgJson.vercelRouteConfig,
+                maxDuration: config.vercel?.maxDuration,
+                environment: config.vercel?.environment,
+                memory: config.vercel?.memory,
             },
             null,
             2,
@@ -46,12 +46,10 @@ export async function vercelBuildCommand(_config: M3StackConfig, _args: string[]
         JSON.stringify(
             {
                 version: 3,
-                ...pkgJson.vercel?.config,
                 routes: [
-                    { src: '/api/(.*)', dest: '/api' },
-                    { src: '/(.*)', dest: '/$1' },
-                    { src: '/(.*)', dest: '/index.html' },
-                    ...(pkgJson.vercel?.routes ?? []),
+                    ...(config.backendRoutes?.map((route) => ({ src: route, dest: '/api' })) ?? []),
+                    { src: '/api/?(.*)', dest: '/api' },
+                    { src: '/[^.]+', dest: '/', status: 200 },
                 ],
             },
             null,

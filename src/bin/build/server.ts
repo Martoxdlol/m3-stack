@@ -61,6 +61,12 @@ export const DEFAULT_SERVER_ENTRY_PATHS = [
     'server/index',
     'server/main',
     'server',
+    'lib/server/index',
+    'lib/server/main',
+    'lib/server',
+    'src/index',
+    'src/main',
+    'src',
 ]
 
 export const DEFAULT_EXTERNAL_LIBS = ['@electric-sql/pglite']

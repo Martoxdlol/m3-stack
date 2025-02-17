@@ -11,7 +11,7 @@ It also provides many importable modules to help you build your app faster.
 - Automatic zero config for
   - `drizzle-orm` and `drizzle-kit`
   - `better-auth`
-  - `vite`
+  - `vite` with react, typescript and tailwindcss
   - `PGLite` for instant local development
 - Zero config for bundling frontend and backend
 - Optional backend and frontend bundling
@@ -87,10 +87,72 @@ you will be totally fine, and even much better in many cases.
 
 **THIS IS A WORK IN PROGRESS**
 
+### Project structure
+
+Minimal project structure:
+
+```
+index.html (optional, only if you want to have a spa frontend, you can imports client scripts from here)
+server.ts (optional, only if you want to have a backend)
+auth.ts (optional, only if you want to use better-auth)
+schema.ts (optional, only if you want to use drizzle-orm)
+m3-stack.config.ts (optional, only if you want to change some config)
+```
+
+You can also use `src`
+
+```
+index.html
+m3-stack.config.ts
+src/
+  server.ts
+  auth.ts
+  schema.ts
+```
+
+You can also do deeper levels of nesting.
+
+```
+index.html
+m3-stack.config.ts
+src/
+  server/
+    main.ts
+  auth/
+    index.ts
+  schema/
+    index.ts
+```
+
+The stack will automatically search for the entrypoints.
+
+Entrypoints:
+
+```
+./src/(server|auth|schema)/(index|main).(ts|js|tsx|jsx)
+./(server|auth|schema)/(index|main).(ts|js|tsx|jsx)
+./src/lib/(server|auth|schema)/(index|main).(ts|js|tsx|jsx)
+```
+
+Config target:
+
+```
+./m3-stack.config.(ts|js)
+./.config/m3-stack.(ts|js)
+
+"m3-stack" field in package.json
+```
+
 ### Create a new app
 
 ```bash
 npx m3-stack create my-app
+```
+
+### Start dev
+
+```bash
+npx m3-stack dev
 ```
 
 ### Building app

@@ -3,6 +3,24 @@ import react from '@vitejs/plugin-react'
 import type { UserConfig } from 'vite'
 import type { M3StackConfig } from '../config'
 
+export const removeUseClientUseServer = {
+    name: 'remove-top-level-directives',
+    enforce: 'pre',
+    transform(code: string) {
+        const lines = code.split('\n')
+
+        if (lines.length === 0) {
+            return code
+        }
+
+        if (lines[0]!.startsWith(`"use `) || lines[0]!.startsWith(`'use `)) {
+            lines.shift()
+        }
+
+        return lines.join('\n')
+    },
+} as const
+
 // https://vite.dev/config/
 export const defaultViteConfig = {
     plugins: [
@@ -19,6 +37,7 @@ export const defaultViteConfig = {
             },
         }),
         tailwindcss(),
+        removeUseClientUseServer,
     ],
     server: {
         host: '0.0.0.0',
