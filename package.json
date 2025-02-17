@@ -64,7 +64,7 @@
         "build": "tsup && cp biome.json dist/biome.json && cp README.md dist/README.md && cp tsconfig.json dist/tsconfig.json && node build-package-json.js",
         "publish": "cd dist && npm publish",
         "postinstall": "node post-install.mjs",
-        "preinstall": "echo '{\"name\":\"m3-stack\"}' > dist/package.json"
+        "preinstall": "node pre-install.mjs"
     },
     "dependencies": {
         "@chialab/esbuild-plugin-meta-url": "^0.18.2",
