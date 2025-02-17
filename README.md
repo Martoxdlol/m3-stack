@@ -127,7 +127,8 @@ npx m3-stack dev
 It will start a dev server for frontend and backend. It will watch for changes and rebuild automatically.
 For the frontend, it will serve index.html on all routes.
 
-For the backend, it will server the backend at '/api'. You can add routes in config.
+For the backend, it will server the backend at '/api'. You can add more routes in config to be served from backend directly.
+For example '/blog/(.\*)' can be served from backend instead of client app.
 
 ### Starter template
 
@@ -142,10 +143,34 @@ Include:
 
 ### `better-auth` Setup
 
-1. Run:
+If you use your own implementation check better auth docs. On how to generate schema. I personally recommend using `drizzle-orm` which comes
+by default with this stack.
 
-```bash
-npx @better-auth/cli generate
+**Using m3-stack defaults**
+
+1. Add your auth instance to config file.
+
+```ts
+// m3-stack.config.ts
+import { createConfig } from "m3-stack/config";
+import { createAuth } from "./src/auth";
+import { createDb, schema } from "./src/db";
+
+const db = createDb();
+
+export default createConfig({
+    ...
+    drizzleSchema: schema,
+    betterAuth: createAuth({ db }),
+    ...
+})
 ```
 
-2. Copy output schema to the `src/db/schema/auth.ts` file. You can add things or change things. Be careful to not break important things.
+2. Run:
+
+```bash
+npx m3-stack better-auth generate
+```
+
+3. Copy output schema to the `src/db/schema/auth.ts` file (or where you put your `drizzle-orm` schema).
+   You can add columns to the schema but be careful to not break important things.
