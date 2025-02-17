@@ -1,12 +1,12 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import type { DBType } from '../db'
+import { type DBType, createDatabase } from '../db'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
 
-export function createAuth(opts: { db: DBType }) {
+export function createAuth(opts?: { db: DBType }) {
     return betterAuth({
-        database: drizzleAdapter(opts.db, {
+        database: drizzleAdapter(opts.db ?? createDatabase(), {
             provider: 'pg',
         }),
         emailAndPassword: {

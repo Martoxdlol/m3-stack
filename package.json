@@ -54,6 +54,7 @@
             "better-auth",
             "drizzle-kit",
             "drizzle-orm",
+            "better-auth",
             "lilconfig",
             "esbuild"
         ]

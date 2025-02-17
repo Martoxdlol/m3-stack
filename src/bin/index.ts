@@ -25,7 +25,7 @@ cli.command('auth-generate-schema', 'Generate the better-auth schema').action(as
     await betterAuthGenerateCommand(config, argv.slice(3))
 })
 
-cli.command('drizzle-kit', 'Generate the better-auth schema').action(async () => {
+cli.command('drizzle-kit', 'Run drizzle-kit with auto detected config').action(async () => {
     const config = await loadM3StackConfig()
     await drizzleKitCommand(config, argv.slice(3))
 })
