@@ -1,6 +1,6 @@
 import { type ChildProcess, spawn } from 'node:child_process'
 import type { M3StackConfig } from '../../config'
-import { buildServerBundle, watchBuildServerBundle } from './server'
+import { buildServerBundle, watchServerBundle } from './server'
 
 export async function buildCommand(config: M3StackConfig, _args: string[]) {
     await buildServerBundle(config.build ?? {})
@@ -8,7 +8,7 @@ export async function buildCommand(config: M3StackConfig, _args: string[]) {
 }
 
 export async function buildWatchCommand(config: M3StackConfig, _args: string[]) {
-    await watchBuildServerBundle(config.build ?? {})
+    await watchServerBundle(config.build ?? {})
 }
 
 export function spawnServer() {
@@ -28,17 +28,18 @@ export async function buildDevCommand(config: M3StackConfig, _args: string[]) {
 
     let firstSuccess = false
 
-    await watchBuildServerBundle({
-        ...config.build,
-
-        onSuccess: async () => {
-            console.log('> node --enable-source-maps dist/server/main.js')
+    await watchServerBundle(
+        {
+            ...config.build,
+        },
+        async () => {
+            console.info('> node --enable-source-maps dist/server/main.js')
             if (!firstSuccess) {
                 firstSuccess = true
                 child = spawnServer()
             }
         },
-    })
+    )
 
     process.on('SIGINT', async () => {
         child?.kill()

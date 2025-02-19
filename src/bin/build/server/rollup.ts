@@ -3,12 +3,10 @@ import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
 import { mkdir, rm } from 'node:fs/promises'
-import { resolve } from 'node:path'
 import { type InputOptions, type OutputOptions, type WatcherOptions, rollup, watch } from 'rollup'
-import { type BuildServerOptions, DEFAULT_SERVER_ENTRY_PATHS } from '.'
-import { findMatchingFile } from '../../helpers'
+import { type BuildServerOptions, type BundleOrWatchFunctionOpts, getEntryFile } from './common'
 
-export type BuildOptions = {
+export type BuildOptionsWithRollup = {
     rollup: {
         input: InputOptions
         output: OutputOptions
@@ -16,12 +14,8 @@ export type BuildOptions = {
     }
 }
 
-export async function getBuildOptions(options: BuildServerOptions): Promise<BuildOptions | null> {
-    const basePath = resolve(options.basePath ?? process.cwd())
-
-    const entryFile = options.entryFile
-        ? resolve(basePath, options.entryFile)
-        : await findMatchingFile(basePath, DEFAULT_SERVER_ENTRY_PATHS, ['js', 'ts', 'jsx', 'tsx'])
+export async function getBuildOptions(options: BuildServerOptions): Promise<BuildOptionsWithRollup | null> {
+    const entryFile = await getEntryFile(options)
 
     if (!entryFile) {
         return null
@@ -52,18 +46,26 @@ export async function getBuildOptions(options: BuildServerOptions): Promise<Buil
     }
 }
 
-export async function rollupBuildServerBundle(opts: BuildServerOptions) {
+export async function rollupBuildServerBundle(
+    opts: BuildServerOptions,
+    bundleOpts: BundleOrWatchFunctionOpts,
+): Promise<void> {
     const buildOptions = await getBuildOptions(opts)
     if (!buildOptions) {
         console.info('Server entry file not found. Skipping server build.')
         return
     }
 
+    await bundleOpts.onStart?.({ bundler: 'rollup' })
     const bundle = await rollup(buildOptions.rollup.input)
     await bundle.write(buildOptions.rollup.output)
+    await bundleOpts.onEnd?.({ dependencies: new Map(), bundler: 'rollup' })
 }
 
-export async function rollupWatchBuildServerBundle(opts: BuildServerOptions & { onSuccess?: () => unknown }) {
+export async function rollupWatchBuildServerBundle(
+    opts: BuildServerOptions,
+    bundleOpts: BundleOrWatchFunctionOpts,
+): Promise<void> {
     const buildOptions = await getBuildOptions(opts)
     if (!buildOptions) {
         console.info('Server entry file not found. Skipping server build.')
@@ -72,15 +74,16 @@ export async function rollupWatchBuildServerBundle(opts: BuildServerOptions & { 
 
     const watcher = watch(buildOptions.rollup.input)
     watcher.on('change', (event) => {
-        console.log(event)
+        console.info('file changed:', event)
     })
     watcher.on('event', async (event) => {
         if (event.code === 'BUNDLE_START') {
+            await bundleOpts.onStart?.({ bundler: 'rollup' })
             await rm('dist/server', { recursive: true, force: true })
             await mkdir('dist/server', { recursive: true })
         }
         if (event.code === 'BUNDLE_END') {
-            opts.onSuccess?.()
+            await bundleOpts.onEnd?.({ dependencies: new Map(), bundler: 'rollup' })
         }
     })
 }

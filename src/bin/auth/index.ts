@@ -85,7 +85,7 @@ export async function betterAuthGenerateCommand(config: M3StackConfig, _args: st
         process.exit(1)
     })
 
-    console.log('Generating auth schema...')
+    console.info('Generating auth schema...')
 
     const schema = await getGenerator({
         adapter,
@@ -97,5 +97,5 @@ export async function betterAuthGenerateCommand(config: M3StackConfig, _args: st
         await writeFile(schema.fileName, schema.code)
     }
 
-    console.log('Auth schema generated! See ./auth-schema.ts')
+    console.info('Auth schema generated! See ./auth-schema.ts')
 }
