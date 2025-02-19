@@ -4,6 +4,7 @@ import {
     type BundleOrWatchFunctionOpts,
     type Dependencies,
     copyDependencies,
+    writeOutputPackageJson,
 } from './common'
 import { esbuildBuildServerBundle, esbuildWatchBuildServerBundle } from './esbuild'
 import { rollupBuildServerBundle, rollupWatchBuildServerBundle } from './rollup'
@@ -72,12 +73,15 @@ export async function buildServerBundle(opts: BuildServerOptions): Promise<void>
     for (const dep of dependencies.keys()) {
         console.info(`- ${dep}`)
     }
+
+    await writeOutputPackageJson()
 }
 
 export async function watchServerBundle(
     opts: BuildServerOptions,
     bundleOpts: BundleOrWatchFunctionOpts,
 ): Promise<void> {
+    await writeOutputPackageJson()
     const [fn] = await getFunction(opts, 'watch')
     await fn(opts, {
         onEnd: (d) => {

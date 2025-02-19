@@ -17,8 +17,6 @@ export async function vercelBuildCommand(config: M3StackConfig, _args: string[])
     await fs.cp('./dist/public', './.vercel/output/static', { recursive: true })
     await fs.cp('./dist/server', './.vercel/output/functions/api.func', { recursive: true })
 
-    await fs.cp('./package.json', './.vercel/output/functions/api.func/package.json', { recursive: true })
-
     await fs.writeFile(
         './.vercel/output/functions/api.func/.vc-config.json',
         JSON.stringify(
