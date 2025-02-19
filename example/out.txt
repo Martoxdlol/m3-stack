@@ -1,0 +1,258 @@
+Loaded m3-stack config from m3-stack.config
+Config debug message: Hello from m3-stack
+vite v6.1.0 building for production...
+Building server bundle with esbuild
+start
+Built server bundle. See ./dist
+transforming...
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Building server bundle with esbuild
+start
+Copied external dependencies
+Copied external dependencies
+end
+✓ 198 modules transformed.
+Building server bundle with esbuild
+start
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+rendering chunks...
+computing gzip size...
+dist/public/index.html                   0.51 kB │ gzip:   0.33 kB
+dist/public/assets/index-6xnPfkFc.css   18.57 kB │ gzip:   5.25 kB
+dist/public/assets/index-B-532aA1.js   322.64 kB │ gzip: 102.74 kB
+✓ built in 899ms
+Building server bundle with esbuild
+start
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Building server bundle with esbuild
+start
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Building server bundle with esbuild
+start
+Copied external dependencies
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Building server bundle with esbuild
+start
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+end
+Copied external dependencies
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Building server bundle with esbuild
+start
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Building server bundle with esbuild
+start
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+end
+Copied external dependencies
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Building server bundle with esbuild
+start
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Building server bundle with esbuild
+start
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+Copied external dependencies
+end
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Server bundle built with esbuild
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson
+Copied external dependencies
+- @hono/node-server
+- @libsql/client
+- dotenv
+- hono
+- m3-stack
+- @trpc/server
+- better-auth
+- drizzle-orm
+- superjson

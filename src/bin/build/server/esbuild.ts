@@ -1,6 +1,7 @@
 import commonjsPlugin from '@chialab/esbuild-plugin-commonjs'
 import type { BuildOptions, Plugin } from 'esbuild'
 import * as esbuild from 'esbuild'
+import { rm } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import { getModuleRootPath, parseImportFrom } from '../../helpers'
 import type { BuildServerOptions, BundleOrWatchFunctionOpts, Dependencies } from './common'
@@ -141,6 +142,8 @@ export async function esbuildBuildServerBundle(
         return
     }
 
+    await rm('dist/server', { recursive: true }).catch(() => null)
+    await rm('dist/node_modules', { recursive: true }).catch(() => null)
     await esbuild.build(buildOptions.esbuild)
 }
 
@@ -154,6 +157,9 @@ export async function esbuildWatchBuildServerBundle(
         console.info('Server entry file not found. Skipping server build.')
         return
     }
+
+    await rm('dist/server', { recursive: true }).catch(() => null)
+    await rm('dist/node_modules', { recursive: true }).catch(() => null)
 
     const ctx = await esbuild.context(buildOptions.esbuild)
 

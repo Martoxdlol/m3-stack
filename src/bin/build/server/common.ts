@@ -3,7 +3,14 @@ import { resolve } from 'node:path'
 import { findMatchingFile } from '../../helpers'
 
 export type BuildServerOptions = {
-    bundler?: 'esbuild' | 'rollup' | 'mixed'
+    bundler?:
+        | 'esbuild'
+        | 'rollup'
+        | {
+              dev?: 'esbuild' | 'rollup'
+              prod?: 'esbuild' | 'rollup'
+              vercel?: 'esbuild' | 'rollup'
+          }
     /**
      * The path of the project root.
      *
@@ -54,6 +61,11 @@ export type BuildServerOptions = {
      * If false, the will be copied to the output directory node_modules.
      */
     bundleDependencies?: boolean
+
+    /**
+     * When bundling to deploy on Vercel, set this to true. It is automatic with `m3-stack vercel-build`
+     */
+    vercel?: boolean
 }
 
 export const DEFAULT_SERVER_ENTRY_PATHS = [
@@ -126,8 +138,11 @@ export async function writeOutputPackageJson() {
 }
 
 export async function copyDependencies(dependencies: Dependencies) {
+    await rm('dist/node_modules', { recursive: true }).catch(() => null)
+
     for (const dep of dependencies.values()) {
-        await rm(`dist/server/node_modules/${dep.name}`, { recursive: true })
-        await cp(dep.root, `dist/server/node_modules/${dep.name}`, { recursive: true })
+        await cp(dep.root, `dist/node_modules/${dep.name}`, { recursive: true }).catch((e) => {
+            console.error(`Failed to copy ${dep.name}`, e)
+        })
     }
 }

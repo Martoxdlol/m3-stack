@@ -4,14 +4,26 @@ import { buildServerBundle, watchServerBundle } from './server'
 
 export async function buildCommand(config: M3StackConfig, _args: string[]) {
     await buildServerBundle(config.build ?? {})
-    console.info('Built server bundle. See ./dist')
+    console.info('Built server bundle.')
+    console.info('---------------------')
+    console.info('dist/')
+    console.info('    server/')
+    console.info('        main.js')
+    console.info('        ...')
+    console.info('    public/')
+    console.info('        index.html')
+    console.info('        ...')
+    console.info('    node_modules/')
+    console.info('    package.json')
+    console.info('---------------------')
 }
 
 export async function buildWatchCommand(config: M3StackConfig, _args: string[]) {
-    await watchServerBundle(config.build ?? {})
+    await watchServerBundle(config.build ?? {}, {})
 }
 
 export function spawnServer() {
+    console.info('> node --watch --enable-source-maps dist/server/main.js')
     return spawn('node', ['--watch', '--enable-source-maps', 'dist/server/main.js'], {
         stdio: 'inherit',
         shell: true,
@@ -32,12 +44,13 @@ export async function buildDevCommand(config: M3StackConfig, _args: string[]) {
         {
             ...config.build,
         },
-        async () => {
-            console.info('> node --enable-source-maps dist/server/main.js')
-            if (!firstSuccess) {
-                firstSuccess = true
-                child = spawnServer()
-            }
+        {
+            onEnd: async () => {
+                if (!firstSuccess || child?.killed || child?.exitCode !== null) {
+                    firstSuccess = true
+                    child = spawnServer()
+                }
+            },
         },
     )
 

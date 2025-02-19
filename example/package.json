@@ -7,7 +7,7 @@
         "message": "Hello from m3-stack",
         "backendRoutes": ["/status"],
         "build": {
-            "bundler": "rollup"
+            "bundler": "esbuild"
         }
     },
     "scripts": {

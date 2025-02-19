@@ -21,7 +21,7 @@ export async function main() {
     const db = createDatabase()
     const auth = createAuth({ db })
     const i18n = createStrings()
-    console.log(createClient({ url: 'http://turso.tech21' }))
+    console.log(createClient({ url: 'http://turso.tech1' }))
     const app = new Hono()
         .use(async (c, next) => {
             const lang = i18n.matchLang(c.req.header('Accept-Language'))
