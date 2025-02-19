@@ -5,7 +5,10 @@
     "type": "module",
     "m3-stack": {
         "message": "Hello from m3-stack",
-        "backendRoutes": ["/status"]
+        "backendRoutes": ["/status"],
+        "build": {
+            "bundler": "esbuild"
+        }
     },
     "scripts": {
         "dev": "m3-stack dev",

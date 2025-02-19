@@ -58,7 +58,8 @@
             "drizzle-orm",
             "better-auth",
             "lilconfig",
-            "esbuild"
+            "esbuild",
+            "rollup"
         ]
     },
     "workspaces": ["example", "dist"],
@@ -70,9 +71,14 @@
     },
     "dependencies": {
         "@chialab/esbuild-plugin-commonjs": "^0.18.0",
+        "@rollup/plugin-commonjs": "^28.0.2",
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-node-resolve": "^16.0.0",
+        "@rollup/plugin-typescript": "^12.1.2",
         "c12": "^2.0.2",
         "cac": "^6.7.14",
         "jiti": "^2.4.2",
+        "rollup-plugin-delete": "^3.0.0",
         "tsup": "^8.3.6"
     },
     "peerDependencies": {
@@ -97,6 +103,7 @@
         "typescript": ">=5.0.0"
     },
     "devDependencies": {
+        "@types/rollup-plugin-delete": "^1.0.0",
         "@types/source-map-support": "^0.5.10",
         "rollup": "^4.34.8"
     }
