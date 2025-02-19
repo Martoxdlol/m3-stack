@@ -49,7 +49,7 @@ export function getSchemaPath() {
 export function createDrizzleConfig(opts?: Partial<Config>): Config {
     const DATABASE_URL = (opts as any)?.dbCredentials?.url || process.env.DATABASE_URL || 'file:./db-data.local'
     const DATABASE_TOKEN =
-        (opts as any).dbCredentials.authToken ||
+        (opts as any)?.dbCredentials?.authToken ||
         process.env.DATABASE_URL ||
         process.env.DATABASE_AUTH_TOKEN ||
         process.env.DATABASE_TOKEN
