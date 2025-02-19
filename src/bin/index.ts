@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import cac from 'cac'
 import { createRequire } from 'node:module'
 import { argv } from 'node:process'
+import cac from 'cac'
 import sourceMapSupport from 'source-map-support'
 import { loadM3StackConfig } from '../config'
 import { betterAuthGenerateCommand } from './auth'
@@ -13,6 +13,7 @@ import { createCommand } from './create'
 import { drizzleKitCommand } from './drizzle-kit'
 import { runCommand } from './helpers'
 import { vercelBuildCommand } from './vercel'
+import 'dotenv/config'
 
 sourceMapSupport.install()
 

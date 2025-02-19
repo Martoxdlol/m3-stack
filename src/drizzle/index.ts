@@ -1,5 +1,5 @@
-import type { Config } from 'drizzle-kit'
 import { cwd } from 'node:process'
+import type { Config } from 'drizzle-kit'
 import { findMatchingFileSync } from '../bin/helpers'
 
 function urlWithoutCredentials(url: string) {
@@ -47,7 +47,12 @@ export function getSchemaPath() {
 }
 
 export function createDrizzleConfig(opts?: Partial<Config>): Config {
-    const DATABASE_URL = process.env.DATABASE_URL || 'file:./db-data.local'
+    const DATABASE_URL = (opts as any).dbCredentials.url || process.env.DATABASE_URL || 'file:./db-data.local'
+    const DATABASE_TOKEN =
+        (opts as any).dbCredentials.authToken ||
+        process.env.DATABASE_URL ||
+        process.env.DATABASE_AUTH_TOKEN ||
+        process.env.DATABASE_TOKEN
 
     const isLocal = DATABASE_URL.startsWith('file:')
 
@@ -70,6 +75,7 @@ export function createDrizzleConfig(opts?: Partial<Config>): Config {
             driver: (opts as any)?.driver || 'pglite',
             dbCredentials: (opts as any)?.dbCredentials || {
                 url: './db-data.local',
+                authToken: DATABASE_TOKEN,
             },
         } as any
     }
