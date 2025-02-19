@@ -1,8 +1,13 @@
 import commonjsPlugin from '@chialab/esbuild-plugin-commonjs'
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import typescript from '@rollup/plugin-typescript'
 import type { BuildOptions } from 'esbuild'
 import * as esbuild from 'esbuild'
 import { cp, readdir, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
+import { rollup } from 'rollup'
 import { findMatchingFile, getModuleRootPath, parseImportFrom, readPackageJson, resolvePath } from '../helpers'
 
 export type BuildServerOptions = {
@@ -153,28 +158,66 @@ export async function removeDistServerDir() {
 }
 
 export async function buildServerBundle(options: BuildServerOptions) {
-    const opts = await buildServerBundleGetOpts(options)
+    const basePath = resolve(options.basePath ?? process.cwd())
 
-    if (!opts) {
+    const entryFile = options.entryFile
+        ? resolve(basePath, options.entryFile)
+        : await findMatchingFile(basePath, DEFAULT_SERVER_ENTRY_PATHS, ['js', 'ts', 'jsx', 'tsx'])
+
+    if (!entryFile) {
+        console.info('Server entry file not found. Skipping server build.')
         return
     }
 
-    await removeDistServerDir()
-
-    await deleteDistNodeModules()
-
-    await runEsbuildBuildServer({
-        ...opts.esbuild,
-        onBuildEnd: async (r) => {
-            await copyModulesToDist(Array.from(r.dependencies.entries()).map(([name, root]) => ({ name, root })))
-        },
+    const bundle = await rollup({
+        input: entryFile,
+        plugins: [json(), typescript(), nodeResolve(), commonjs({ transformMixedEsModules: true })],
     })
 
-    await buildOutputPackageJson({ dependencies: opts.newPkgJsonDeps })
+    bundle.write({
+        format: 'esm',
+        dir: 'dist/server',
+        name: 'main',
+        sourcemap: true,
+    })
 
-    await copyFilesToOutputDir(opts.basePath, options.copyFiles ?? {})
+    // const bundle = await build({
+    //     platform: 'node',
+    //     input: entryFile,
+    //     // watch: false,
+    //     keepNames: true,
+    //     treeshake: true,
+    //     output: {
+    //         format: 'esm',
+    //         file: 'dist/server/main.js',
+    //         sourcemap: true, // TODO: options.sourcemap
+    //     },
+    // })
 
-    await removeDistCopiedFiles()
+    console.log(bundle)
+
+    // const opts = await buildServerBundleGetOpts(options)
+
+    // if (!opts) {
+    //     return
+    // }
+
+    // await removeDistServerDir()
+
+    // await deleteDistNodeModules()
+
+    // await runEsbuildBuildServer({
+    //     ...opts.esbuild,
+    //     onBuildEnd: async (r) => {
+    //         await copyModulesToDist(Array.from(r.dependencies.entries()).map(([name, root]) => ({ name, root })))
+    //     },
+    // })
+
+    // await buildOutputPackageJson({ dependencies: opts.newPkgJsonDeps })
+
+    // await copyFilesToOutputDir(opts.basePath, options.copyFiles ?? {})
+
+    // await removeDistCopiedFiles()
 }
 
 export async function watchBuildServerBundle(

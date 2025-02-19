@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server'
+import { createClient } from '@libsql/client/web'
 import 'dotenv/config'
 import { Hono } from 'hono'
 import { type Strings, createStrings } from '../lib/strings'
@@ -16,12 +17,11 @@ declare global {
         schema: typeof schema
     }
 }
-
 export async function main() {
     const db = createDatabase()
     const auth = createAuth({ db })
     const i18n = createStrings()
-
+    console.log(createClient)
     const app = new Hono()
         .use(async (c, next) => {
             const lang = i18n.matchLang(c.req.header('Accept-Language'))

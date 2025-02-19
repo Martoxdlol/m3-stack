@@ -58,7 +58,8 @@
             "drizzle-orm",
             "better-auth",
             "lilconfig",
-            "esbuild"
+            "esbuild",
+            "rollup"
         ]
     },
     "workspaces": ["example", "dist"],
@@ -70,6 +71,10 @@
     },
     "dependencies": {
         "@chialab/esbuild-plugin-commonjs": "^0.18.0",
+        "@rollup/plugin-commonjs": "^28.0.2",
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-node-resolve": "^16.0.0",
+        "@rollup/plugin-typescript": "^12.1.2",
         "c12": "^2.0.2",
         "cac": "^6.7.14",
         "jiti": "^2.4.2",
