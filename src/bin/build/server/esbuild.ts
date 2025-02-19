@@ -1,8 +1,8 @@
+import { rm } from 'node:fs/promises'
+import { builtinModules } from 'node:module'
 import commonjsPlugin from '@chialab/esbuild-plugin-commonjs'
 import type { BuildOptions, Plugin } from 'esbuild'
 import * as esbuild from 'esbuild'
-import { rm } from 'node:fs/promises'
-import { builtinModules } from 'node:module'
 import { getModuleRootPath, parseImportFrom } from '../../helpers'
 import type { BuildServerOptions, BundleOrWatchFunctionOpts, Dependencies } from './common'
 import { ESBUILD_DEFAULT_EXTERNAL_DEPS, getEntryFile } from './common'
@@ -58,6 +58,7 @@ export async function getBuildOptions(
             packages: 'bundle',
             minify: options.minify,
             minifyWhitespace: options.minify,
+            external: [...ESBUILD_DEFAULT_EXTERNAL_DEPS, ...(options.externalDependencies ?? [])],
             plugins: [
                 commonjsPlugin(),
                 customPlugin(options, {
@@ -103,7 +104,9 @@ export function customPlugin(opts: BuildServerOptions, pluginOpts: CustomPluginO
                     }
                 }
 
-                dependenciesAndImporter.set(moduleName, { importer: args.importer, isDynamic: false })
+                if (!builtinModules.includes(moduleName)) {
+                    dependenciesAndImporter.set(moduleName, { importer: args.importer, isDynamic: false })
+                }
 
                 if (args.kind === 'dynamic-import') {
                     dependenciesAndImporter.get(args.path)!.isDynamic = true

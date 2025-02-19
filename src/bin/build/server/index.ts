@@ -16,7 +16,7 @@ async function getFunction(
     let prod = 'esbuild'
 
     if (opts.vercel) {
-        prod = 'rollup'
+        prod = 'esbuild'
     }
 
     if (opts.bundler) {
