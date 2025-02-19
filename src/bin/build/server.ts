@@ -224,16 +224,20 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
         external.add(btin)
         external.add(`node:${btin}`)
     }
+    // const _detectedExternals = new Set<string>()
 
     const esbuildOpts: BuildOptions = {
-        entryPoints: ['src/server/main.tsx'],
+        entryPoints: [opts.entryPoint],
         bundle: true,
-        outfile: 'dist/server/main.js',
+        outdir: 'dist/server',
+        entryNames: 'main',
+        assetNames: 'assets/[name]',
         sourcemap: opts.sourcemap ?? 'linked',
+        splitting: true,
         format: 'esm',
         tsconfig: 'tsconfig.json',
         target: 'esnext',
-        platform: 'neutral',
+        platform: 'node',
         keepNames: true,
         treeShaking: true,
         packages: 'bundle',
