@@ -1,11 +1,9 @@
-import { nativeModulesPlugin } from '@douglasneuroinformatics/esbuild-plugin-native-modules'
-import { EsmExternalsPlugin } from '@esbuild-plugins/esm-externals'
+import commonjsPlugin from '@chialab/esbuild-plugin-commonjs'
 import type { BuildOptions } from 'esbuild'
 import * as esbuild from 'esbuild'
 import { cp, readdir, rm, writeFile } from 'node:fs/promises'
-import { builtinModules } from 'node:module'
 import { join, resolve } from 'node:path'
-import { findMatchingFile, readPackageJson, resolveModuleDir, resolvePath } from '../helpers'
+import { findMatchingFile, getModuleRootPath, parseImportFrom, readPackageJson, resolvePath } from '../helpers'
 
 export type BuildServerOptions = {
     /**
@@ -52,6 +50,12 @@ export type BuildServerOptions = {
      * Documentation: https://esbuild.github.io/api/#sourcemap
      */
     sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both'
+
+    /**
+     * Bundle dependencies. If true, all dependencies will be bundled into the output.
+     * If false, the will be copied to the output directory node_modules.
+     */
+    bundleDependencies?: boolean
 }
 
 export const DEFAULT_SERVER_ENTRY_PATHS = [
@@ -69,7 +73,7 @@ export const DEFAULT_SERVER_ENTRY_PATHS = [
     'src',
 ]
 
-export const DEFAULT_EXTERNAL_LIBS = ['@electric-sql/pglite']
+export const DEFAULT_EXTERNAL_LIBS = ['@electric-sql/pglite', '@libsql/client']
 
 export async function buildServerBundleGetOpts(options: BuildServerOptions): Promise<{
     esbuild: RunEsbuildOptions
@@ -132,6 +136,7 @@ export async function buildServerBundleGetOpts(options: BuildServerOptions): Pro
             entryPoint: entryFile,
             sourcemap: options.sourcemap,
             external: Array.from(external),
+            bundleDependencies: options.bundleDependencies !== false,
         },
         newPkgJsonDeps,
         basePath,
@@ -156,15 +161,20 @@ export async function buildServerBundle(options: BuildServerOptions) {
 
     await removeDistServerDir()
 
-    await runEsbuildBuildServer(opts.esbuild)
+    await deleteDistNodeModules()
+
+    await runEsbuildBuildServer({
+        ...opts.esbuild,
+        onBuildEnd: async (r) => {
+            await copyModulesToDist(Array.from(r.dependencies.entries()).map(([name, root]) => ({ name, root })))
+        },
+    })
 
     await buildOutputPackageJson({ dependencies: opts.newPkgJsonDeps })
 
     await copyFilesToOutputDir(opts.basePath, options.copyFiles ?? {})
 
     await removeDistCopiedFiles()
-
-    await copyModulesToDist(Array.from(new Set([...opts.external, ...(options.internalDependencies ?? [])])))
 }
 
 export async function watchBuildServerBundle(
@@ -185,7 +195,7 @@ export async function watchBuildServerBundle(
             console.info('Building server...')
             options.onStartBuild?.()
         },
-        async onWatchBuildEnd(result) {
+        async onWatchBuildEnd(result, o) {
             if (result.errors.length > 0) {
                 console.error('Server build failed. Check errors above')
 
@@ -197,10 +207,8 @@ export async function watchBuildServerBundle(
             await buildOutputPackageJson({ dependencies: opts.newPkgJsonDeps })
             await copyFilesToOutputDir(opts.basePath, options.copyFiles ?? {}, true)
             await removeDistCopiedFiles()
-            await copyModulesToDist(
-                Array.from(new Set([...opts.external, ...(options.internalDependencies ?? [])])),
-                true,
-            )
+            await deleteDistNodeModules()
+            await copyModulesToDist(Array.from(o.dependencies.entries()).map(([name, root]) => ({ name, root })))
 
             console.info('Server build done')
             options.onSuccess?.()
@@ -208,23 +216,29 @@ export async function watchBuildServerBundle(
     })
 }
 
+export type BuildOutput = {
+    dynamicImports: string[]
+    dependencies: Map<string, string>
+}
+
 export type RunEsbuildOptions = {
     entryPoint: string
     sourcemap?: boolean | 'linked' | 'inline' | 'external' | 'both'
     external?: string[]
+    bundleDependencies?: boolean
     watch?: boolean
     onWatchBuildStart?: () => void
-    onWatchBuildEnd?: (result: esbuild.BuildResult) => void
+    onWatchBuildEnd?: (result: esbuild.BuildResult, output: BuildOutput) => unknown
+    onBuildEnd?: (output: BuildOutput) => unknown
 }
 
 export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
     const external = new Set<string>(opts.external)
 
-    for (const btin of builtinModules) {
-        external.add(btin)
-        external.add(`node:${btin}`)
-    }
-    // const _detectedExternals = new Set<string>()
+    const dependencies = new Map<string, string>()
+    const dependenciesAndImporter = new Map<string, string>()
+
+    const dynamicImports = new Set<string>()
 
     const esbuildOpts: BuildOptions = {
         entryPoints: [opts.entryPoint],
@@ -243,8 +257,47 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
         packages: 'bundle',
         external: Array.from(external),
         plugins: [
-            nativeModulesPlugin({ resolveFailure: 'throw' }),
-            EsmExternalsPlugin({ externals: Array.from(external) }),
+            {
+                name: 'find-require',
+                setup(build) {
+                    build.onStart(() => {
+                        dependenciesAndImporter.clear()
+                        dependencies.clear()
+                        dynamicImports.clear()
+                    })
+                    build.onResolve({ filter: /^@?\w+/ }, (args) => {
+                        if (opts.bundleDependencies && args.kind === 'import-statement') {
+                            const p = parseImportFrom(args.path)
+                            if (!p?.moduleName || !external.has(p.moduleName)) {
+                                return null
+                            }
+                        }
+
+                        dependenciesAndImporter.set(args.path, args.importer)
+
+                        if (args.kind === 'dynamic-import') {
+                            dynamicImports.add(args.path)
+                        }
+
+                        return {
+                            path: args.path,
+                            external: true,
+                        }
+                    })
+                    build.onEnd(async () => {
+                        for (const [dep, importer] of dependenciesAndImporter) {
+                            const root = await getModuleRootPath(dep, importer)
+                            if (!root) {
+                                console.warn(`Failed to resolve module root for ${dep}`)
+                                continue
+                            }
+                            dependencies.set(dep, root)
+                        }
+                    })
+                },
+            },
+            // nativeModulesPlugin({ resolveFailure: 'throw' }),
+            commonjsPlugin(),
             {
                 name: 'watch-events',
                 setup(build) {
@@ -252,7 +305,8 @@ export async function runEsbuildBuildServer(opts: RunEsbuildOptions) {
                         opts.onWatchBuildStart?.()
                     })
                     build.onEnd((result) => {
-                        opts.onWatchBuildEnd?.(result)
+                        opts.onWatchBuildEnd?.(result, { dynamicImports: Array.from(dynamicImports), dependencies })
+                        opts.onBuildEnd?.({ dynamicImports: Array.from(dynamicImports), dependencies })
                     })
                 },
             },
@@ -308,7 +362,7 @@ export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<s
             throw new Error(`Invalid copy-to path ${to}`)
         }
 
-        const fromResolved = resolvePath(from, basePath)
+        const fromResolved = await resolvePath(from, basePath)
         const toResolved = join(basePath, 'dist', to)
 
         if (!fromResolved) {
@@ -326,23 +380,31 @@ export async function copyFilesToOutputDir(basePath: string, copyFiles: Record<s
     }
 }
 
-export async function copyModulesToDist(modules: string[], silent = false) {
+export type CopyModule = {
+    name: string
+    base?: string
+    root?: string
+}
+
+export async function deleteDistNodeModules() {
     await rm('dist/node_modules', { recursive: true, force: true }).catch((e) => {
         if (e.code !== 'ENOENT') {
             throw e
         }
     })
+}
 
+export async function copyModulesToDist(modules: CopyModule[], silent = false) {
     for (const m of modules) {
-        const resolved = resolveModuleDir(m)
+        const resolved = m.root ?? (await getModuleRootPath(m.name, m.base))
         if (!resolved) {
             throw new Error(`Module not found: ${m}`)
         }
 
         if (!silent) {
-            console.info(`Adding module ${m} to output. ${resolved} -> dist/node_modules/${m}`)
+            console.info(`Adding module ${m.name} to output. ${resolved} -> dist/node_modules/${m.name}`)
         }
-        await cp(resolved, `dist/node_modules/${m}`, { recursive: true, force: true })
+        await cp(resolved, `dist/node_modules/${m.name}`, { recursive: true, force: true })
     }
 }
 

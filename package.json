@@ -69,9 +69,7 @@
         "preinstall": "node pre-install.mjs"
     },
     "dependencies": {
-        "@chialab/esbuild-plugin-meta-url": "^0.18.2",
-        "@douglasneuroinformatics/esbuild-plugin-native-modules": "^1.0.0",
-        "@esbuild-plugins/esm-externals": "^0.1.2",
+        "@chialab/esbuild-plugin-commonjs": "^0.18.0",
         "c12": "^2.0.2",
         "cac": "^6.7.14",
         "jiti": "^2.4.2",
