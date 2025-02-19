@@ -59,6 +59,10 @@ export async function drizzleKitCommand(config: M3StackConfig, args: string[]) {
     }
 
     const databaseUrl = (config.drizzle as any)?.dbCredentials?.url ?? process.env.DATABASE_URL
+    const databaseToken =
+        (config.drizzle as any)?.dbCredentials?.authToken ??
+        process.env.DATABASE_AUTH_TOKEN ??
+        process.env.DATABASE_TOKEN
 
     if (databaseUrl) {
         if (databaseUrl.startsWith('mysql') && !detectedDialect) {
@@ -77,6 +81,22 @@ export async function drizzleKitCommand(config: M3StackConfig, args: string[]) {
         drizzleOpts.dialect = detectedDialect
 
         console.info(`Using detected dialect: ${detectedDialect}`)
+    }
+
+    if (!(drizzleOpts as any).dbCredentials?.url && databaseUrl) {
+        if (!(drizzleOpts as any).dbCredentials) {
+            ;(drizzleOpts as any).dbCredentials = {}
+        }
+
+        ;(drizzleOpts as any).dbCredentials.url = databaseUrl
+    }
+
+    if (!(drizzleOpts as any).dbCredentials?.authToken && databaseToken) {
+        if (!(drizzleOpts as any).dbCredentials) {
+            ;(drizzleOpts as any).dbCredentials = {}
+        }
+
+        ;(drizzleOpts as any).dbCredentials.authToken = databaseToken
     }
 
     const drizzleConfig = 'dialect' in (config.drizzle ?? {}) ? config.drizzle : createDrizzleConfig(drizzleOpts)
