@@ -8,9 +8,7 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports.biome": "explicit",
         "quickfix.biome": "explicit",
-        "source.fixAll.ts": "explicit",
-        "source.sortImports": "explicit",
-        "source.removeUnusedImports": "always"
+        "source.fixAll.ts": "explicit"
     },
     "editor.formatOnSave": true,
     "[typescript]": {
