@@ -12,8 +12,34 @@ async function getFunction(
     opts: BuildServerOptions,
     mode: 'watch' | 'build',
 ): Promise<[BundleOrWatchFunction, 'esbuild' | 'rollup']> {
+    let dev = 'esbuild'
+    let prod = 'esbuild'
+
+    if (opts.vercel) {
+        prod = 'rollup'
+    }
+
+    if (opts.bundler) {
+        if (typeof opts.bundler === 'string') {
+            dev = opts.bundler
+            prod = opts.bundler
+        }
+
+        if (typeof opts.bundler === 'object' && opts.bundler.dev) {
+            dev = opts.bundler.dev
+        }
+
+        if (typeof opts.bundler === 'object' && opts.bundler.prod) {
+            prod = opts.bundler.prod
+        }
+
+        if (typeof opts.bundler === 'object' && opts.bundler.vercel && opts.vercel) {
+            prod = opts.bundler.vercel
+        }
+    }
+
     if (mode === 'watch') {
-        if (opts.bundler === 'rollup') {
+        if (dev === 'rollup') {
             return [rollupWatchBuildServerBundle, 'rollup']
         }
 
@@ -21,11 +47,11 @@ async function getFunction(
     }
 
     if (mode === 'build') {
-        if (opts.bundler === 'esbuild') {
-            return [esbuildBuildServerBundle, 'esbuild']
+        if (prod === 'rollup') {
+            return [rollupBuildServerBundle, 'rollup']
         }
 
-        return [rollupBuildServerBundle, 'rollup']
+        return [esbuildBuildServerBundle, 'esbuild']
     }
 
     throw new Error(`Unknown mode: ${mode}`)

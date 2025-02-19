@@ -3,7 +3,13 @@ import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
 import { type InputOptions, type OutputOptions, type WatcherOptions, rollup, watch } from 'rollup'
-import { type BuildServerOptions, type BundleOrWatchFunctionOpts, getEntryFile } from './common'
+import { parseImportFrom } from '../../helpers'
+import {
+    type BuildServerOptions,
+    type BundleOrWatchFunctionOpts,
+    ROLLUP_DEFAULT_EXTERNAL_DEPS,
+    getEntryFile,
+} from './common'
 
 export type BuildOptionsWithRollup = {
     rollup: {
@@ -24,6 +30,19 @@ export async function getBuildOptions(options: BuildServerOptions): Promise<Buil
         rollup: {
             input: {
                 input: entryFile,
+                external: (id, _importer, _isResolved) => {
+                    const p = parseImportFrom(id)
+
+                    if (p?.moduleName) {
+                        const mod = p.moduleName
+
+                        if (ROLLUP_DEFAULT_EXTERNAL_DEPS.has(mod)) {
+                            return true
+                        }
+
+                        return options.externalDependencies?.includes(mod) ?? false
+                    }
+                },
                 plugins: [
                     nodeResolve(),
                     commonjs({ esmExternals: true }),

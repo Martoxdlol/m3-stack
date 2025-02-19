@@ -8,6 +8,7 @@ import { loadM3StackConfig } from '../config'
 import { betterAuthGenerateCommand } from './auth'
 import { buildCommand, buildDevCommand, buildWatchCommand } from './build'
 import { buildClientAppCommand, devClientAppCommand } from './build/client'
+import { buildServerBundle } from './build/server'
 import { createCommand } from './create'
 import { drizzleKitCommand } from './drizzle-kit'
 import { runCommand } from './helpers'
@@ -46,7 +47,7 @@ cli.command('drizzle-kit', 'Run drizzle-kit with auto detected config').action(a
 
 cli.command('vercel-build', 'Run drizzle-kit with auto detected config').action(async () => {
     const config = await loadM3StackConfig()
-    await buildCommand(config, argv.slice(3))
+    await buildServerBundle({ bundleDependencies: true, ...config.build, vercel: true })
     await vercelBuildCommand(config, argv.slice(3))
 })
 

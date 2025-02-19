@@ -5,7 +5,7 @@ import { rm } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import { getModuleRootPath, parseImportFrom } from '../../helpers'
 import type { BuildServerOptions, BundleOrWatchFunctionOpts, Dependencies } from './common'
-import { getEntryFile } from './common'
+import { ESBUILD_DEFAULT_EXTERNAL_DEPS, getEntryFile } from './common'
 
 export type BuildOptionsWithRollup = {
     esbuild: BuildOptions
@@ -56,6 +56,8 @@ export async function getBuildOptions(
             keepNames: true,
             treeShaking: true,
             packages: 'bundle',
+            minify: options.minify,
+            minifyWhitespace: options.minify,
             plugins: [
                 commonjsPlugin(),
                 customPlugin(options, {
@@ -96,7 +98,7 @@ export function customPlugin(opts: BuildServerOptions, pluginOpts: CustomPluginO
                 const moduleName = p.moduleName
 
                 if (opts.bundleDependencies && args.kind === 'import-statement') {
-                    if (!pluginOpts.external.has(moduleName)) {
+                    if (!pluginOpts.external.has(moduleName) && !ESBUILD_DEFAULT_EXTERNAL_DEPS.has(moduleName)) {
                         return null
                     }
                 }

@@ -2,6 +2,10 @@ import { cp, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { findMatchingFile } from '../../helpers'
 
+export const COMMON_DEFAULT_EXTERNAL_DEPS = ['@electric-sql/pglite']
+export const ROLLUP_DEFAULT_EXTERNAL_DEPS = new Set([...COMMON_DEFAULT_EXTERNAL_DEPS])
+export const ESBUILD_DEFAULT_EXTERNAL_DEPS = new Set([...COMMON_DEFAULT_EXTERNAL_DEPS, '@libsql/client'])
+
 export type BuildServerOptions = {
     bundler?:
         | 'esbuild'
@@ -66,6 +70,11 @@ export type BuildServerOptions = {
      * When bundling to deploy on Vercel, set this to true. It is automatic with `m3-stack vercel-build`
      */
     vercel?: boolean
+
+    /**
+     * Minify the output.
+     */
+    minify?: boolean
 }
 
 export const DEFAULT_SERVER_ENTRY_PATHS = [
