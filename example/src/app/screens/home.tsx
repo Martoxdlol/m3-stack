@@ -11,7 +11,7 @@ export function HomeScreen() {
 
     return (
         <div>
-            <h1>Home</h1>
+            <h1 className='text-xl'>Home</h1>
             <p>{message}</p>
             <p>{user?.email}</p>
             <div>

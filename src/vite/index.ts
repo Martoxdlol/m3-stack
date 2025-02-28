@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import type { UserConfig } from 'vite'
+import type { Plugin, PluginOption, UserConfig } from 'vite'
 import type { M3StackConfig } from '../config'
 
 export const removeUseClientUseServer = {
@@ -52,10 +52,30 @@ export const defaultViteConfig = {
     },
 } satisfies UserConfig
 
+function flatMapDeep(arr: PluginOption[]): Plugin[] {
+    const result: Plugin[] = []
+
+    for (const item of arr) {
+        if (Array.isArray(item)) {
+            if (item.length > 0) {
+                result.push(...flatMapDeep(item)) // Recursive call for nested arrays
+            }
+        } else if (item && typeof item === 'object' && 'name' in item) {
+            result.push(item) // Add C type objects to the result
+        }
+        // else ignore null, undefined, false, and empty arrays
+    }
+
+    return result
+}
 export function createViteConfig(config?: UserConfig, m3StackConf?: M3StackConfig): UserConfig {
     const pluginsMap = new Map<string, any>()
 
-    const allPlugins = [...defaultViteConfig.plugins, ...(m3StackConf?.vite?.plugins || []), ...(config?.plugins || [])]
+    const allPlugins: PluginOption[] = flatMapDeep([
+        ...defaultViteConfig.plugins,
+        ...(m3StackConf?.vite?.plugins || []),
+        ...(config?.plugins || []),
+    ])
 
     for (const plugin of allPlugins) {
         if (plugin && typeof plugin === 'object' && 'name' in plugin && typeof plugin.name === 'string') {
