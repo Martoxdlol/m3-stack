@@ -1,3 +1,5 @@
+import { cwd } from 'node:process'
+import { getModuleRootPath, readPackageJson } from '../../helpers'
 import {
     type BuildServerOptions,
     type BundleOrWatchFunction,
@@ -61,6 +63,24 @@ async function getFunction(
 export async function buildServerBundle(opts: BuildServerOptions): Promise<void> {
     const [fn, bundler] = await getFunction(opts, 'build')
     let dependencies: Dependencies = new Map()
+
+    if (opts.bundleDependencies === false) {
+        const pkgJson = await readPackageJson(cwd())
+
+        for (const name of Object.keys(pkgJson?.dependencies ?? {})) {
+            const root = await getModuleRootPath(name)
+
+            if (!root) {
+                continue
+            }
+
+            dependencies.set(name, {
+                dynamicImport: false,
+                name,
+                root,
+            })
+        }
+    }
 
     await fn(opts, {
         onEnd: async (d) => {
