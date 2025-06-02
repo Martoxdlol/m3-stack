@@ -73,40 +73,40 @@
         "@chialab/esbuild-plugin-commonjs": "^0.18.0",
         "@electric-sql/pglite": "^0.2.17",
         "@mrleebo/prisma-ast": "^0.12.1",
-        "@rollup/plugin-commonjs": "^28.0.2",
+        "@rollup/plugin-commonjs": "^28.0.3",
         "@rollup/plugin-json": "^6.1.0",
-        "@rollup/plugin-node-resolve": "^16.0.0",
+        "@rollup/plugin-node-resolve": "^16.0.1",
         "@rollup/plugin-typescript": "^12.1.2",
-        "c12": "^2.0.2",
+        "c12": "^2.0.4",
         "cac": "^6.7.14",
-        "dotenv": "^16.4.7",
+        "dotenv": "^16.5.0",
         "jiti": "^2.4.2",
-        "postgres": "^3.4.5",
-        "tsup": "^8.3.6"
+        "postgres": "^3.4.7",
+        "tsup": "^8.5.0"
     },
     "peerDependencies": {
         "@tailwindcss/vite": "^4.0.6",
         "@vitejs/plugin-react": "^4.3.4",
         "@better-auth/cli": "^1.1.17",
         "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
-        "@types/node": "^22.13.1",
+        "@types/node": "^22.13.2",
         "@types/react": "^19.0.8",
         "@biomejs/biome": "^1.9.4",
         "@hono/node-server": "^1.13.8",
         "hono": "^4.7.1",
-        "nanoid": "^5.0.9",
+        "nanoid": "^3.3.8",
         "tailwindcss": "^4.0.6",
         "vite": "^6.1.0",
-        "drizzle-kit": ">=0.30.4",
-        "drizzle-orm": ">=0.39.3",
+        "drizzle-kit": "^0.30.4",
+        "drizzle-orm": "^0.39.3",
         "react": "^19.0.0",
         "better-auth": "^1.1.18",
         "source-map-support": "^0.5.21",
-        "esbuild": "^0.25.0",
-        "typescript": ">=5.0.0"
+        "esbuild": "^0.25.5",
+        "typescript": "^5.7.3"
     },
     "devDependencies": {
         "@types/source-map-support": "^0.5.10",
-        "rollup": "^4.34.8"
+        "rollup": "^4.41.1"
     }
 }
