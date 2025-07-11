@@ -94,14 +94,14 @@ export async function buildServerBundle(opts: BuildServerOptions): Promise<void>
         console.info(`- ${dep}`)
     }
 
-    await writeOutputPackageJson()
+    await writeOutputPackageJson(opts)
 }
 
 export async function watchServerBundle(
     opts: BuildServerOptions,
     bundleOpts: BundleOrWatchFunctionOpts,
 ): Promise<void> {
-    await writeOutputPackageJson()
+    await writeOutputPackageJson(opts)
     const [fn] = await getFunction(opts, 'watch')
     await fn(opts, {
         onEnd: (d) => {

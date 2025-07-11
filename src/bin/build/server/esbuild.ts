@@ -40,6 +40,18 @@ export async function getBuildOptions(
         }
     }
 
+    const plugins: Plugin[] = []
+
+    if(options.module !== 'cjs') {
+        plugins.push(commonjsPlugin())
+    }
+
+    plugins.push(customPlugin(options, {
+        external,
+        onStart: () => bundleOpts.onStart?.({ bundler: 'esbuild' }),
+        onEnd: (dependencies) => bundleOpts.onEnd?.({ bundler: 'esbuild', dependencies }),
+    }))
+
     return {
         esbuild: {
             entryPoints: [entryFile],
@@ -48,8 +60,8 @@ export async function getBuildOptions(
             entryNames: 'main',
             assetNames: 'assets/[name]',
             sourcemap: options.sourcemap ?? 'linked',
-            splitting: true,
-            format: 'esm',
+            splitting: options.module !== 'cjs',
+            format: options.module ?? 'esm',
             tsconfig: 'tsconfig.json',
             target: 'esnext',
             platform: 'node',
@@ -59,14 +71,7 @@ export async function getBuildOptions(
             minify: options.minify,
             minifyWhitespace: options.minify,
             external: [...ESBUILD_DEFAULT_EXTERNAL_DEPS, ...(options.externalDependencies ?? [])],
-            plugins: [
-                commonjsPlugin(),
-                customPlugin(options, {
-                    external,
-                    onStart: () => bundleOpts.onStart?.({ bundler: 'esbuild' }),
-                    onEnd: (dependencies) => bundleOpts.onEnd?.({ bundler: 'esbuild', dependencies }),
-                }),
-            ],
+            plugins,
         },
     }
 }

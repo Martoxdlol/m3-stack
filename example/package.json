@@ -17,7 +17,7 @@
         "db:push": "m3-stack drizzle-kit push",
         "start": "m3-stack start",
         "vercel-build": "m3-stack vercel-build",
-        "m3-stack": "m3-stack"
+        "m3-stack": "workspace:*"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.66.0",

@@ -1,4 +1,4 @@
-import { cp, rm, writeFile } from 'node:fs/promises'
+import { cp, rm, writeFile, mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { findMatchingFile } from '../../helpers'
 
@@ -15,6 +15,11 @@ export type BuildServerOptions = {
               prod?: 'esbuild' | 'rollup'
               vercel?: 'esbuild' | 'rollup'
           }
+    
+    /**
+     * Module type
+     */
+    module?: 'cjs' | 'esm'
     /**
      * The path of the project root.
      *
@@ -129,12 +134,14 @@ export type BundleOrWatchFunctionOpts = {
 }
 export type BundleOrWatchFunction = (opts: BuildServerOptions, bundleOpts: BundleOrWatchFunctionOpts) => Promise<void>
 
-export async function writeOutputPackageJson() {
+export async function writeOutputPackageJson(opts: BuildServerOptions) {
+    await mkdir('dist', { recursive: true  })
+
     await writeFile(
         'dist/package.json',
         JSON.stringify(
             {
-                type: 'module',
+                type: opts.module === 'cjs' ? 'commonjs' : 'module',
                 main: 'server/main.js',
                 scripts: {
                     start: 'node --enable-source-maps server/main.js',
