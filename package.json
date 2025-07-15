@@ -16,6 +16,7 @@
         "./hooks": "./src/hooks/index.ts",
         "./helpers": "./src/helpers/index.ts",
         "./drizzle": "./src/drizzle/index.ts",
+        "./create": "./src/create/index.tsx",
         "./i18n": "./src/i18n/index.tsx",
         "./config": "./src/config/index.ts"
     },
@@ -37,6 +38,7 @@
             "helpers": "src/helpers/index.ts",
             "drizzle": "src/drizzle/index.ts",
             "i18n": "src/i18n/index.tsx",
+            "create": "src/create/index.tsx",
             "config": "src/config/index.ts"
         },
         "platform": "node",
@@ -87,7 +89,7 @@
     "peerDependencies": {
         "@tailwindcss/vite": "^4.0.6",
         "@vitejs/plugin-react": "^4.3.4",
-        "@better-auth/cli": "^1.1.17",
+        "@better-auth/cli": "^1.2.12",
         "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
         "@types/node": "^22.13.2",
         "@types/react": "^19.0.8",
@@ -97,10 +99,10 @@
         "nanoid": "^3.3.8",
         "tailwindcss": "^4.0.6",
         "vite": "^6.1.0",
-        "drizzle-kit": "^0.30.4",
-        "drizzle-orm": "^0.39.3",
+        "drizzle-kit": "^0.31.4",
+        "drizzle-orm": "^0.44.3",
         "react": "^19.0.0",
-        "better-auth": "^1.1.18",
+        "better-auth": "^1.2.12",
         "source-map-support": "^0.5.21",
         "esbuild": "^0.25.5",
         "typescript": "^5.7.3"
